@@ -1,8 +1,14 @@
 # llm package - low-level design
 
 A small client library for talking to any LLM - hosted (OpenAI, xAI, Anthropic)
-or self-hosted (Ollama, vLLM, LM Studio, text-generation-webui, or any other
-server that speaks the OpenAI chat-completions API).
+or self-hosted (Ollama, vLLM, TensorRT-LLM's `trtllm-serve`, LM Studio,
+text-generation-webui, or any other server that speaks the OpenAI
+chat-completions API).
+
+> Raw Triton Inference Server (its native gRPC/HTTP protocol, not the
+> OpenAI-compatible frontend) is **not** covered - it's not chat-completions
+> shaped and its request format is model-specific. That would need its own
+> provider class; see "Adding a new named hosted provider" below.
 
 ## Goals
 
@@ -21,7 +27,7 @@ llm/
   base.py                        LLMClient - the interface all providers implement
   config.py                      REGISTRY: provider name -> ProviderConfig
   providers/
-    openai_compatible.py         OpenAICompatibleClient - OpenAI, xAI, Ollama, custom
+    openai_compatible.py         OpenAICompatibleClient - OpenAI, xAI, Ollama, vLLM, trtllm, custom
     anthropic_client.py          AnthropicClient - native Messages API
   factory.py                     get_client() - resolves a provider name to a client instance
   service.py                     chat() / chat_with_messages() - the functions callers actually use

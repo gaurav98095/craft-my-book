@@ -19,5 +19,7 @@ REGISTRY: dict[str, ProviderConfig] = {
     "openai": ProviderConfig("openai_compatible", "https://api.openai.com/v1", "OPENAI_API_KEY"),
     "xai": ProviderConfig("openai_compatible", "https://api.x.ai/v1", "XAI_API_KEY"),
     "ollama": ProviderConfig("openai_compatible", "http://localhost:11434/v1", None),
+    "vllm": ProviderConfig("openai_compatible", "http://localhost:8000/v1", None),
+    "trtllm": ProviderConfig("openai_compatible", "http://localhost:8000/v1", None),
     "anthropic": ProviderConfig("anthropic", None, "ANTHROPIC_API_KEY"),
 }
