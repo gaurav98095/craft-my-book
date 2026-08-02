@@ -1,6 +1,10 @@
 """ingestion.speech - Module 1.2: lecture audio/video -> transcript (Whisper)."""
 
-from .vocab import bootstrap_vocab_from_audio, extract_vocab, vocab_material_from_filenames
+from .vocab import (
+    bootstrap_vocab_from_audio,
+    extract_vocab,
+    vocab_material_from_filenames,
+)
 from .whisper import (
     Segment,
     SpeechIngestor,

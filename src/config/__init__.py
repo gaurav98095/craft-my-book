@@ -29,6 +29,9 @@ def load_prompt(name: str) -> str:
 class LLMConfig:
     provider: str
     model: str
+    # only needed when provider: custom (a self-hosted/OpenAI-compatible endpoint that
+    # isn't in llm/config.py's REGISTRY) - passed straight through to get_client().
+    base_url: str | None = None
 
 
 @dataclass(frozen=True)
@@ -54,18 +57,29 @@ class LayoutConfig:
 
 
 @dataclass(frozen=True)
+class VisionConfig:
+    batch_by: str  # "page" | "document" - see config.yaml for tradeoffs
+    visual_block_types: tuple[str, ...]
+    vlm: LLMConfig
+
+
+@dataclass(frozen=True)
 class IngestionConfig:
     output_dir: str
     speech: SpeechConfig
     layout: LayoutConfig
+    vision: VisionConfig
 
 
 def _load_llm(d: dict) -> LLMConfig:
-    return LLMConfig(provider=d["provider"], model=d["model"])
+    return LLMConfig(
+        provider=d["provider"], model=d["model"], base_url=d.get("base_url")
+    )
 
 
 def _load_ingestion(d: dict) -> IngestionConfig:
     speech = d["speech"]
+    vision = d["vision"]
     return IngestionConfig(
         output_dir=d["output_dir"],
         speech=SpeechConfig(
@@ -76,6 +90,11 @@ def _load_ingestion(d: dict) -> IngestionConfig:
             max_vocab_terms=speech["vocab_llm"]["max_terms"],
         ),
         layout=LayoutConfig(**d["layout"]),
+        vision=VisionConfig(
+            batch_by=vision["batch_by"],
+            visual_block_types=tuple(vision["visual_block_types"]),
+            vlm=_load_llm(vision["vlm"]),
+        ),
     )
 
 
@@ -88,5 +107,6 @@ __all__ = [
     "WhisperConfig",
     "LLMConfig",
     "LayoutConfig",
+    "VisionConfig",
     "load_prompt",
 ]

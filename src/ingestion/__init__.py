@@ -22,6 +22,7 @@ from .speech import (
     transcribe_audio,
     vocab_material_from_filenames,
 )
+from .vision import describe_visuals
 
 __all__ = [
     # strategy contract
@@ -47,4 +48,6 @@ __all__ = [
     "LayoutIngestor",
     "run_mineru",
     "parse_content_list",
+    # vision modality (enrichment pass, not a registry strategy)
+    "describe_visuals",
 ]
