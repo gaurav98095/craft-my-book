@@ -17,6 +17,7 @@ from pathlib import Path
 
 from faster_whisper import WhisperModel
 
+from config import TRANSCRIPTS_OUT_DIR, WHISPER_COMPUTE_TYPE, WHISPER_DEVICE, WHISPER_MODEL_SIZE
 from llm import LLMClient, chat
 
 # --------------------------------------------------------------------------
@@ -81,7 +82,8 @@ def extract_audio(source_path: str | Path, out_path: str | Path | None = None) -
         raise ValueError(
             f"Unsupported source extension '{source_path.suffix}'. Expected one of: {sorted(SUPPORTED_EXTENSIONS)}"
         )
-    out_path = Path(out_path) if out_path else source_path.with_suffix(".wav")
+    # with_suffix(".wav") would collide with the input when the source is already a .wav
+    out_path = Path(out_path) if out_path else source_path.with_name(f"{source_path.stem}.16k.wav")
 
     subprocess.run(
         [
@@ -121,9 +123,9 @@ def _get_model(model_size: str, device: str, compute_type: str) -> WhisperModel:
 def transcribe_audio(
     audio_path: str | Path,
     vocab: list[str] | None = None,
-    model_size: str = "large-v3",
-    device: str = "auto",
-    compute_type: str = "auto",
+    model_size: str = WHISPER_MODEL_SIZE,
+    device: str = WHISPER_DEVICE,
+    compute_type: str = WHISPER_COMPUTE_TYPE,
 ) -> Transcript:
     """
     Domain-primed, VAD-filtered transcription with word-level timestamps.
@@ -214,8 +216,8 @@ def process_source(
     vocab: list[str] | None,
     client: LLMClient,
     clean_model: str,
-    whisper_model_size: str = "large-v3",
-    out_dir: str | Path = "output/transcripts",
+    whisper_model_size: str = WHISPER_MODEL_SIZE,
+    out_dir: str | Path = TRANSCRIPTS_OUT_DIR,
 ) -> Transcript:
     """Video or audio source -> normalized audio -> raw transcript -> cleaned transcript -> saved JSON.
 

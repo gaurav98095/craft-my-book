@@ -13,6 +13,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from config import DRAFT_WHISPER_MODEL_SIZE, MAX_VOCAB_TERMS
 from llm import LLMClient, chat
 
 from .speech import transcribe_audio
@@ -31,7 +32,7 @@ Material:
 
 
 def extract_vocab(
-    material: str, client: LLMClient, model: str, max_terms: int = 60
+    material: str, client: LLMClient, model: str, max_terms: int = MAX_VOCAB_TERMS
 ) -> list[str]:
     """Extract a domain vocabulary list from source material (slide titles, filenames,
     headings, abstracts, etc.) so Whisper can be primed without a hardcoded term list.
@@ -61,8 +62,8 @@ def bootstrap_vocab_from_audio(
     audio_path: str | Path,
     client: LLMClient,
     model: str,
-    draft_model_size: str = "small",
-    max_terms: int = 60,
+    draft_model_size: str = DRAFT_WHISPER_MODEL_SIZE,
+    max_terms: int = MAX_VOCAB_TERMS,
 ) -> list[str]:
     """
     Fallback for when audio is the *only* source - no slides, no filenames worth reading.
@@ -70,7 +71,7 @@ def bootstrap_vocab_from_audio(
     Runs a fast, unprimed draft transcription (small Whisper model, cheap) and extracts
     candidate domain terms from its rough text. The draft may still mishear some terms,
     but an LLM skimming the draft catches far more real vocabulary than no priming at
-    all - and the real (large-v3) pass then gets primed with what it needs to self-correct.
+    all - and the real transcription pass then gets primed with what it needs to self-correct.
     """
     draft = transcribe_audio(audio_path, vocab=None, model_size=draft_model_size)
     material = "\n".join(seg.text for seg in draft.segments)
