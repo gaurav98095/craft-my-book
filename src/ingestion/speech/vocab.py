@@ -1,5 +1,5 @@
 """
-ingestion.vocab - automatic domain-vocabulary extraction.
+ingestion.speech.vocab - automatic domain-vocabulary extraction.
 
 Whisper's initial_prompt (Module 1.2) works best when primed with the domain's own
 technical vocabulary, but that vocabulary isn't knowable ahead of time - the corpus
@@ -16,7 +16,7 @@ from pathlib import Path
 from config import INGESTION, load_prompt
 from llm import LLMClient, chat
 
-from .speech import transcribe_audio
+from .whisper import transcribe_audio
 
 _EXTRACT_PROMPT = load_prompt("vocab_extraction.txt")
 

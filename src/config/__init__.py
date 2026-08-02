@@ -48,9 +48,16 @@ class SpeechConfig:
 
 
 @dataclass(frozen=True)
+class LayoutConfig:
+    backend: str
+    work_dir: str
+
+
+@dataclass(frozen=True)
 class IngestionConfig:
     output_dir: str
     speech: SpeechConfig
+    layout: LayoutConfig
 
 
 def _load_llm(d: dict) -> LLMConfig:
@@ -68,6 +75,7 @@ def _load_ingestion(d: dict) -> IngestionConfig:
             vocab_llm=_load_llm(speech["vocab_llm"]),
             max_vocab_terms=speech["vocab_llm"]["max_terms"],
         ),
+        layout=LayoutConfig(**d["layout"]),
     )
 
 
@@ -79,5 +87,6 @@ __all__ = [
     "SpeechConfig",
     "WhisperConfig",
     "LLMConfig",
+    "LayoutConfig",
     "load_prompt",
 ]

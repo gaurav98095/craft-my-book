@@ -1,5 +1,5 @@
 """
-ingestion.speech - Module 1.2: Speech Processing (Whisper).
+ingestion.speech.whisper - Module 1.2: Speech Processing (Whisper).
 
 Turns lecture audio/video into a structured, timestamped, domain-aware transcript,
 suitable for downstream tag extraction / TOC generation / retrieval.
@@ -25,7 +25,7 @@ from faster_whisper import WhisperModel
 from config import INGESTION, load_prompt
 from llm import LLMClient, chat
 
-from .base import Ingestor, IngestedDocument, IngestedSegment
+from ..base import Ingestor, IngestedDocument, IngestedSegment
 
 # --------------------------------------------------------------------------
 # Data model
