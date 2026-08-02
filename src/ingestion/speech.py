@@ -22,7 +22,7 @@ from pathlib import Path
 
 from faster_whisper import WhisperModel
 
-from config import WHISPER_COMPUTE_TYPE, WHISPER_DEVICE, WHISPER_MODEL_SIZE
+from config import INGESTION, load_prompt
 from llm import LLMClient, chat
 
 from .base import Ingestor, IngestedDocument, IngestedSegment
@@ -134,9 +134,9 @@ def _get_model(model_size: str, device: str, compute_type: str) -> WhisperModel:
 def transcribe_audio(
     audio_path: str | Path,
     vocab: list[str] | None = None,
-    model_size: str = WHISPER_MODEL_SIZE,
-    device: str = WHISPER_DEVICE,
-    compute_type: str = WHISPER_COMPUTE_TYPE,
+    model_size: str = INGESTION.speech.whisper.model_size,
+    device: str = INGESTION.speech.whisper.device,
+    compute_type: str = INGESTION.speech.whisper.compute_type,
 ) -> Transcript:
     """
     Domain-primed, VAD-filtered transcription with word-level timestamps.
@@ -185,19 +185,7 @@ def transcribe_audio(
 # Stage 1c - conservative cleaning pass
 # --------------------------------------------------------------------------
 
-_CLEAN_SYSTEM_PROMPT = """You clean raw lecture transcript segments for a technical book pipeline.
-
-Fix ONLY:
-- misheard technical terms (e.g. "could a" -> "CUDA", "laura" -> "LoRA")
-- punctuation and sentence breaks
-- obvious ASR artifacts (stutters, false starts, filler words like "um"/"uh")
-
-Do NOT:
-- summarize, paraphrase, or reword sentences
-- add information that wasn't said, or remove information that was said
-- change the meaning or the speaker's intent
-
-Return only the cleaned segment text, nothing else."""
+_CLEAN_SYSTEM_PROMPT = load_prompt("speech_cleaning.txt")
 
 
 def clean_segment(text: str, client: LLMClient, model: str) -> str:
@@ -237,7 +225,7 @@ class SpeechIngestor(Ingestor):
         client: LLMClient,
         clean_model: str,
         vocab: list[str] | None = None,
-        whisper_model_size: str = WHISPER_MODEL_SIZE,
+        whisper_model_size: str = INGESTION.speech.whisper.model_size,
     ):
         self.client = client
         self.clean_model = clean_model

@@ -13,26 +13,19 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from config import DRAFT_WHISPER_MODEL_SIZE, MAX_VOCAB_TERMS
+from config import INGESTION, load_prompt
 from llm import LLMClient, chat
 
 from .speech import transcribe_audio
 
-_EXTRACT_PROMPT = """You are seeding a speech-to-text vocabulary for a technical lecture.
-
-From the material below, list the technical terms, acronyms, proper nouns, and jargon a
-domain expert would use - the words a generic speech recognizer is most likely to mishear
-(e.g. "CUDA", "LoRA", "KV Cache", "FlashAttention" for an ML lecture, but the domain here
-could be anything). Skip common English words.
-
-Return ONLY a comma-separated list of terms, nothing else.
-
-Material:
-{material}"""
+_EXTRACT_PROMPT = load_prompt("vocab_extraction.txt")
 
 
 def extract_vocab(
-    material: str, client: LLMClient, model: str, max_terms: int = MAX_VOCAB_TERMS
+    material: str,
+    client: LLMClient,
+    model: str,
+    max_terms: int = INGESTION.speech.max_vocab_terms,
 ) -> list[str]:
     """Extract a domain vocabulary list from source material (slide titles, filenames,
     headings, abstracts, etc.) so Whisper can be primed without a hardcoded term list.
@@ -62,8 +55,8 @@ def bootstrap_vocab_from_audio(
     audio_path: str | Path,
     client: LLMClient,
     model: str,
-    draft_model_size: str = DRAFT_WHISPER_MODEL_SIZE,
-    max_terms: int = MAX_VOCAB_TERMS,
+    draft_model_size: str = INGESTION.speech.draft_whisper_model_size,
+    max_terms: int = INGESTION.speech.max_vocab_terms,
 ) -> list[str]:
     """
     Fallback for when audio is the *only* source - no slides, no filenames worth reading.
