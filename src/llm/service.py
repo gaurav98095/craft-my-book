@@ -10,6 +10,8 @@ def chat(client: LLMClient, model: str, prompt: str, **kwargs) -> str:
     return response.content
 
 
-def chat_with_messages(client: LLMClient, model: str, messages: list[Message], **kwargs) -> ChatResponse:
+def chat_with_messages(
+    client: LLMClient, model: str, messages: list[Message], **kwargs
+) -> ChatResponse:
     """Send a full message history (e.g. including a system prompt), return the full response."""
     return client.chat(model, messages, **kwargs)

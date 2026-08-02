@@ -16,9 +16,13 @@ from ..types import ChatResponse, Message, Usage
 
 
 class OpenAICompatibleClient(LLMClient):
-    def __init__(self, base_url: str, api_key: str | None = None, env_var: str | None = None):
+    def __init__(
+        self, base_url: str, api_key: str | None = None, env_var: str | None = None
+    ):
         if not base_url:
-            raise ConfigurationError("base_url is required for an OpenAI-compatible client")
+            raise ConfigurationError(
+                "base_url is required for an OpenAI-compatible client"
+            )
 
         resolved_key = api_key or (os.environ.get(env_var) if env_var else None)
         if env_var and not resolved_key:
