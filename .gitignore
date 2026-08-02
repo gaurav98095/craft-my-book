@@ -7,3 +7,7 @@ __pycache__/
 
 # Jupyter
 .ipynb_checkpoints/
+
+# local test media / pipeline output (large binaries, don't belong in git)
+data/
+output/

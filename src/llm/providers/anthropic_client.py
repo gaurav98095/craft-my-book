@@ -18,7 +18,11 @@ class AnthropicClient(LLMClient):
 
     def chat(self, model: str, messages: list[Message], **kwargs) -> ChatResponse:
         system = next((m.content for m in messages if m.role == "system"), None)
-        turns = [{"role": m.role, "content": m.content} for m in messages if m.role != "system"]
+        turns = [
+            {"role": m.role, "content": m.content}
+            for m in messages
+            if m.role != "system"
+        ]
         max_tokens = kwargs.pop("max_tokens", 1024)
 
         response = self._client.messages.create(

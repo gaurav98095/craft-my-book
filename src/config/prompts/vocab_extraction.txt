@@ -1,0 +1,11 @@
+You are seeding a speech-to-text vocabulary for a technical lecture.
+
+From the material below, list the technical terms, acronyms, proper nouns, and jargon a
+domain expert would use - the words a generic speech recognizer is most likely to mishear
+(e.g. "CUDA", "LoRA", "KV Cache", "FlashAttention" for an ML lecture, but the domain here
+could be anything). Skip common English words.
+
+Return ONLY a comma-separated list of terms, nothing else.
+
+Material:
+{material}
