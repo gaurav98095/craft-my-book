@@ -1,10 +1,12 @@
+from .base import Ingestor, IngestedDocument, IngestedSegment, save_document
+from .registry import STRATEGIES, get_ingestor_class
 from .speech import (
     Segment,
+    SpeechIngestor,
     Transcript,
     Word,
     clean_transcript,
     extract_audio,
-    process_source,
     transcribe_audio,
 )
 from .vocab import (
@@ -14,13 +16,23 @@ from .vocab import (
 )
 
 __all__ = [
+    # strategy contract
+    "Ingestor",
+    "IngestedDocument",
+    "IngestedSegment",
+    "save_document",
+    # dispatch
+    "STRATEGIES",
+    "get_ingestor_class",
+    # speech strategy
+    "SpeechIngestor",
     "Word",
     "Segment",
     "Transcript",
     "extract_audio",
     "transcribe_audio",
     "clean_transcript",
-    "process_source",
+    # vocab
     "extract_vocab",
     "vocab_material_from_filenames",
     "bootstrap_vocab_from_audio",

@@ -5,7 +5,12 @@ Turns lecture audio/video into a structured, timestamped, domain-aware transcrip
 suitable for downstream tag extraction / TOC generation / retrieval.
 
 Pipeline: video -> audio (ffmpeg) -> raw transcript (faster-whisper) -> cleaned
-transcript (conservative LLM pass) -> Transcript JSON.
+transcript (conservative LLM pass) -> Transcript (internal) -> IngestedDocument.
+
+The low-level functions (extract_audio, transcribe_audio, clean_transcript) are
+useful on their own for inspecting intermediate output; SpeechIngestor wraps them
+into the Ingestor strategy (see ingestion.base) that ingestion.registry dispatches
+to for audio/video sources.
 """
 
 from __future__ import annotations
@@ -17,8 +22,10 @@ from pathlib import Path
 
 from faster_whisper import WhisperModel
 
-from config import TRANSCRIPTS_OUT_DIR, WHISPER_COMPUTE_TYPE, WHISPER_DEVICE, WHISPER_MODEL_SIZE
+from config import WHISPER_COMPUTE_TYPE, WHISPER_DEVICE, WHISPER_MODEL_SIZE
 from llm import LLMClient, chat
+
+from .base import Ingestor, IngestedDocument, IngestedSegment
 
 # --------------------------------------------------------------------------
 # Data model
@@ -83,7 +90,11 @@ def extract_audio(source_path: str | Path, out_path: str | Path | None = None) -
             f"Unsupported source extension '{source_path.suffix}'. Expected one of: {sorted(SUPPORTED_EXTENSIONS)}"
         )
     # with_suffix(".wav") would collide with the input when the source is already a .wav
-    out_path = Path(out_path) if out_path else source_path.with_name(f"{source_path.stem}.16k.wav")
+    out_path = (
+        Path(out_path)
+        if out_path
+        else source_path.with_name(f"{source_path.stem}.16k.wav")
+    )
 
     subprocess.run(
         [
@@ -207,31 +218,57 @@ def clean_transcript(
 
 
 # --------------------------------------------------------------------------
-# Orchestration
+# Strategy - the Ingestor this module contributes to the registry
 # --------------------------------------------------------------------------
 
 
-def process_source(
-    source_path: str | Path,
-    vocab: list[str] | None,
-    client: LLMClient,
-    clean_model: str,
-    whisper_model_size: str = WHISPER_MODEL_SIZE,
-    out_dir: str | Path = TRANSCRIPTS_OUT_DIR,
-) -> Transcript:
-    """Video or audio source -> normalized audio -> raw transcript -> cleaned transcript -> saved JSON.
+class SpeechIngestor(Ingestor):
+    """Ingestion strategy for lecture audio/video: ffmpeg -> Whisper -> LLM cleanup.
 
-    `vocab` should come from ingestion.vocab.extract_vocab() (or similar), run per corpus -
-    there's no single vocabulary that fits every domain a lecture might cover.
+    `vocab` should come from ingestion.vocab.extract_vocab() (or bootstrap_vocab_from_audio),
+    run per corpus - there's no single vocabulary that fits every domain a lecture might cover.
     """
-    audio_path = extract_audio(source_path)
-    transcript = transcribe_audio(
-        audio_path, vocab=vocab, model_size=whisper_model_size
-    )
-    transcript = clean_transcript(transcript, client, clean_model)
 
-    out_dir = Path(out_dir)
-    out_dir.mkdir(parents=True, exist_ok=True)
-    transcript.to_json(out_dir / f"{Path(source_path).stem}.json")
+    source_type = "speech"
+    supported_extensions = frozenset(SUPPORTED_EXTENSIONS)
 
-    return transcript
+    def __init__(
+        self,
+        client: LLMClient,
+        clean_model: str,
+        vocab: list[str] | None = None,
+        whisper_model_size: str = WHISPER_MODEL_SIZE,
+    ):
+        self.client = client
+        self.clean_model = clean_model
+        self.vocab = vocab
+        self.whisper_model_size = whisper_model_size
+
+    def ingest(self, source_path: str | Path) -> IngestedDocument:
+        audio_path = extract_audio(source_path)
+        transcript = transcribe_audio(
+            audio_path, vocab=self.vocab, model_size=self.whisper_model_size
+        )
+        transcript = clean_transcript(transcript, self.client, self.clean_model)
+        return self._to_document(source_path, transcript)
+
+    @classmethod
+    def _to_document(
+        cls, source_path: str | Path, transcript: Transcript
+    ) -> IngestedDocument:
+        segments = [
+            IngestedSegment(
+                text=seg.text,
+                order=i,
+                start=seg.start,
+                end=seg.end,
+                metadata={"words": [asdict(w) for w in seg.words]} if seg.words else {},
+            )
+            for i, seg in enumerate(transcript.segments)
+        ]
+        return IngestedDocument(
+            source=Path(source_path).name,
+            source_type=cls.source_type,
+            segments=segments,
+            metadata={"language": transcript.language, "duration": transcript.duration},
+        )

@@ -1,0 +1,26 @@
+# Central place for pipeline choices - model sizes, providers, output locations.
+# Change a value here instead of hunting through notebook cells / function signatures.
+
+llm:
+  # transcript cleaning, vocab extraction/bootstrapping, drafting
+  provider: openai
+  model: gpt-4o-mini
+
+whisper:
+  # Module 1.2 - speech transcription.
+  # "small" while iterating locally - fully cached after the first run, fast, no
+  # multi-GB download. Switch to "large-v3" for real lecture-quality transcription
+  # once you have a stable connection (and ideally a GPU) - see ingestion/speech.py
+  # for why domain accuracy matters there.
+  model_size: small
+  device: auto
+  compute_type: auto
+  # Fast draft pass used only to bootstrap vocab from audio when no other material
+  # exists (ingestion/vocab.py: bootstrap_vocab_from_audio). Deliberately small/cheap.
+  draft_model_size: small
+
+vocab:
+  max_terms: 60
+
+output:
+  transcripts_dir: output/transcripts
