@@ -10,6 +10,7 @@ from .exceptions import (
     ProviderNotFoundError,
 )
 from .factory import get_client
+from .multimodal import image_part, image_to_data_url, text_part
 from .service import chat, chat_with_messages
 from .types import ChatResponse, Message, Usage
 
@@ -25,4 +26,7 @@ __all__ = [
     "get_client",
     "chat",
     "chat_with_messages",
+    "text_part",
+    "image_part",
+    "image_to_data_url",
 ]

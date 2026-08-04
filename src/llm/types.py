@@ -9,7 +9,9 @@ Role = Literal["system", "user", "assistant"]
 @dataclass
 class Message:
     role: Role
-    content: str
+    # str for plain text; a list of OpenAI-style content parts (see llm.multimodal's
+    # text_part/image_part) for multimodal messages.
+    content: str | list[dict[str, Any]]
 
 
 @dataclass

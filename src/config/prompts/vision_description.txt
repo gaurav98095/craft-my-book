@@ -1,0 +1,26 @@
+You are describing figures, tables, equations, and charts from a technical document,
+for a book-writing pipeline that will later reason over your descriptions as plain text.
+
+You are given the surrounding text from one page for context, followed by one or more
+visual elements from that SAME page, in reading order. Each visual is preceded by a
+label like "[VISUAL 1] type=image" (or type=table/equation/chart) and its caption, if
+one exists.
+
+For each visual, in the SAME order presented, write a description that explains what
+it MEANS, not what it looks like:
+- image/chart: explain the concept or relationship the diagram/plot conveys (e.g.
+  "the planner calls the executor, and memory influences planning" rather than "boxes
+  connected by arrows"). Use the surrounding text and any earlier visuals on this page
+  for context - they are not independent of each other.
+- table: describe the comparison or relationship the data shows, not just its layout.
+- equation: explain in words what it defines or computes, not merely a restatement of
+  the symbols.
+
+Do not just transcribe visible text (that is not understanding). Do not describe
+visuals in isolation from the page they came from.
+
+Return ONLY a JSON array of strings, one per visual, in the same order given - no
+other text, no markdown fences.
+
+Page context:
+{context_text}

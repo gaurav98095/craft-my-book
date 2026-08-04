@@ -10,9 +10,10 @@ from __future__ import annotations
 from pathlib import Path
 
 from .base import Ingestor
+from .layout import LayoutIngestor
 from .speech import SpeechIngestor
 
-STRATEGIES: tuple[type[Ingestor], ...] = (SpeechIngestor,)
+STRATEGIES: tuple[type[Ingestor], ...] = (SpeechIngestor, LayoutIngestor)
 
 
 def get_ingestor_class(source_path: str | Path) -> type[Ingestor]:

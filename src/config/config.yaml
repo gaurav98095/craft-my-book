@@ -15,8 +15,8 @@ ingestion:
     whisper:
       # "small" while iterating locally - fully cached after the first run, fast, no
       # multi-GB download. Switch to "large-v3" for real lecture-quality transcription
-      # once you have a stable connection (and ideally a GPU) - see ingestion/speech.py
-      # for why domain accuracy matters there.
+      # once you have a stable connection (and ideally a GPU) - see
+      # ingestion/speech/whisper.py for why domain accuracy matters there.
       model_size: small
       device: auto
       compute_type: auto
@@ -36,3 +36,56 @@ ingestion:
       provider: openai
       model: gpt-4o-mini
       max_terms: 60
+
+  layout:
+    # Module 1.3 - MinerU layout parsing (PDF/DOCX/PPTX/XLSX). Purely deterministic -
+    # no LLM here. MinerU finds figures/tables/equations and reconstructs reading
+    # order; a later module (ingestion.vision) is what *understands* what's inside them.
+    #
+    # "pipeline" backend runs fully local (CPU or GPU, no external service). First run
+    # pulls model weights - see MINERU_MODEL_SOURCE in .env (huggingface/modelscope/
+    # local) if the default mirror is slow/unreachable, or pre-fetch with
+    # `mineru-models-download`.
+    backend: pipeline
+    work_dir: output/layout
+
+  vision:
+    # Module 1.4 - figure/table/equation understanding. Purely semantic - runs after
+    # ingestion.layout has already found every visual block; this only describes
+    # what's inside them, using surrounding text as context (never in isolation) - see
+    # ingestion/vision/describe.py.
+    #
+    # batch_by is the batching algorithm: how visuals get grouped into one multimodal
+    # call instead of one call per image (so e.g. Figure 4 can be described with
+    # awareness of Figure 2 on the same page).
+    #   page:     group by page_idx (default) - keeps each call's context bounded
+    #             regardless of document length.
+    #   document: every visual + all text in a single call - richer cross-page
+    #             awareness, but only safe for short documents; easy to blow the
+    #             context window on anything book-length.
+    batch_by: page
+
+    # content_list.json `type` values (see ingestion/layout/mineru.py) this stage
+    # treats as "visual" and sends to the model for description.
+    visual_block_types: [image, chart, table, equation]
+
+    vlm:
+      # No provider is hardcoded anywhere in ingestion/vision/ - every call goes
+      # through llm.get_client(provider), same as every other component, so this is
+      # the ONLY place the vision model choice lives. Architecturally this should be
+      # the same model used later for writing (shared vocabulary between "describing
+      # figures" and "writing about them").
+      #
+      # Point this at whatever actually serves your vision model - a hosted API
+      # (provider: openai/xai/anthropic, see llm/config.py's REGISTRY), or
+      # provider: custom + base_url for a self-hosted OpenAI-compatible server (vLLM
+      # serving Qwen2-VL, etc). Defaulting to gpt-4o-mini for now since it's already
+      # configured and vision-capable - swap once your target model/host is decided:
+      #   provider: xai
+      #   model: <xai vision model name>
+      # or, self-hosted:
+      #   provider: custom
+      #   model: <model name your server expects>
+      #   base_url: http://localhost:8000/v1
+      provider: openai
+      model: gpt-4o-mini
