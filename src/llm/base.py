@@ -9,12 +9,16 @@ Groq, a self-hosted vLLM server, anything OpenAI-compatible) is a change to
 `.env`, not to any of that call-site code. See `factory.build_llm_client`.
 
 A provider only has to implement `_chat`. `generate` and `generate_structured`
-— including the JSON-repair retry loop — are shared here, once, so every
-provider gets them for free and behaves identically under retry.
+— including the JSON-repair retry loop and the transient-error retry below —
+are shared here, once, so every provider gets them for free and behaves
+identically under retry.
 """
 
+import os
 import re
 import json
+import time
+import logging
 from abc import ABC, abstractmethod
 from io import BytesIO
 from pathlib import Path
@@ -22,7 +26,26 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 
 from PIL import Image
 
+_log = logging.getLogger("src.llm")
+
 ContentBlock = Dict[str, Any]
+
+
+def _is_retryable_error(exc: Exception) -> bool:
+    """
+    A rate limit or a provider's own "high demand, try again" is not a bug in
+    the request -- it clears on its own. A bad API key or an unknown model
+    never will, no matter how many times it's retried. Every provider SDK
+    used here (openai, anthropic) exposes `.status_code` on its HTTP errors,
+    so this needs no provider-specific imports to tell the two apart.
+    """
+    status = getattr(exc, "status_code", None)
+    if status is not None:
+        return status == 429 or 500 <= status < 600
+    # network-level failures (timeouts, connection resets) carry no status
+    # code in any of these SDKs, but are transient by nature.
+    name = type(exc).__name__
+    return "Timeout" in name or "Connection" in name
 
 
 def extract_json_object(raw: str) -> Tuple[Optional[Any], Optional[str]]:
@@ -119,6 +142,12 @@ class LLMClient(ABC):
         self.calls = 0
         self.structured_repairs = 0
         self.structured_failures = 0
+        # A single flaky call should not lose a multi-hour run: Pipeline B's
+        # tag extraction alone is one sequential call per chunk, and any
+        # hosted provider returns a 429/503 under load sooner or later.
+        # Overridable per machine without touching provider config.
+        self.max_retries = int(os.getenv("LLM_RETRY_ATTEMPTS", "5"))
+        self.retry_backoff_seconds = float(os.getenv("LLM_RETRY_BACKOFF_SECONDS", "2"))
 
     # ------------------------------------------------------- provider hook --
     @abstractmethod
@@ -131,6 +160,25 @@ class LLMClient(ABC):
             {"type": "image", "image": <path | PIL.Image>}
         """
 
+    # ------------------------------------------------- transient-error retry --
+    def _chat_with_retry(self, content: List[ContentBlock], system: Optional[str],
+                         max_tokens: int, temperature: float) -> str:
+        last_exc: Optional[Exception] = None
+        for attempt in range(1, self.max_retries + 1):
+            try:
+                return self._chat(content, system, max_tokens, temperature)
+            except Exception as exc:
+                last_exc = exc
+                if not _is_retryable_error(exc) or attempt == self.max_retries:
+                    raise
+                delay = self.retry_backoff_seconds * (2 ** (attempt - 1))
+                _log.warning(
+                    f"  [{self.model_id}] transient error (attempt "
+                    f"{attempt}/{self.max_retries}), retrying in {delay:.0f}s: "
+                    f"{type(exc).__name__}: {exc}")
+                time.sleep(delay)
+        raise last_exc  # pragma: no cover — loop always returns or raises above
+
     # ------------------------------------------------------------ free text --
     def generate(self, system: Optional[str], user: str, max_tokens: int = 1_024,
                 temperature: float = 0.2, images: Optional[List[Any]] = None) -> str:
@@ -139,7 +187,7 @@ class LLMClient(ABC):
         ]
         content.append({"type": "text", "text": user})
         self.calls += 1
-        return self._chat(content, system, max_tokens, temperature)
+        return self._chat_with_retry(content, system, max_tokens, temperature)
 
     # ------------------------------------------------------------ structured --
     def generate_structured(
@@ -186,7 +234,7 @@ class LLMClient(ABC):
             }]
 
             self.calls += 1
-            raw = self._chat(blocks, system, max_tokens, temperature)
+            raw = self._chat_with_retry(blocks, system, max_tokens, temperature)
             obj, reason = extract_json_object(raw)
 
             if obj is not None:

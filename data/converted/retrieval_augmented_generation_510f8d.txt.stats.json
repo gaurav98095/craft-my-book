@@ -1,0 +1,17 @@
+{
+  "total_items": 1,
+  "text_blocks": 13,
+  "figures_kept": 0,
+  "tables_kept": 0,
+  "equations_kept": 0,
+  "decorative": 0,
+  "dropped_layout": 0,
+  "document_level": 0,
+  "fallback_used": 0,
+  "elapsed": 0.0,
+  "output_chars": 3516,
+  "source_document": "retrieval_augmented_generation.md",
+  "source_type": "text",
+  "figure_ids": [],
+  "figures": []
+}

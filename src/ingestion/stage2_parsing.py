@@ -1,5 +1,6 @@
-"""Stage 2 — Documents to Structured JSON (MinerU / Docling)."""
+"""Stage 2 — Documents to Structured JSON (MinerU / Docling / the shared LLM)."""
 
+import os
 import json
 import time
 import threading
@@ -15,10 +16,12 @@ from .setup import (
     PATHS,
     make_logger,
     doc_slug,
+    normalise_text,
     source_type_for,
     SOURCE_TYPE_BY_EXT,
     DOCUMENT_EXTENSIONS,
 )
+from ..llm import LLMClient
 
 stage2_log = make_logger("stage2.parse", "stage2_parsing.log")
 
@@ -27,8 +30,12 @@ stage2_log = make_logger("stage2.parse", "stage2_parsing.log")
 class Stage2Config:
     """Configuration for Stage 2 - Layout parsing."""
 
-    parser_type: str = "mineru"  # "mineru" | "docling"
-    parse_method: str = "auto"  # "auto" | "txt" | "ocr"
+    # "mineru" | "docling" -- a local layout-detection tool, heavy on CPU/GPU.
+    # "llm" -- the shared LLMClient (see src.llm), no local model at all.
+    # PARSER_TYPE lets this be switched per machine without editing code, the
+    # same way LLM_PROVIDER switches the model.
+    parser_type: str = field(default_factory=lambda: os.getenv("PARSER_TYPE", "mineru"))
+    parse_method: str = "auto"  # "auto" | "txt" | "ocr" -- ignored by the "llm" backend
 
     # Which files this stage handles. Media files belong to Stage 1, so they
     # are deliberately excluded here rather than being silently "unsupported".
@@ -133,6 +140,16 @@ def _normalise_parser_return(raw: Any) -> List[Dict[str, Any]]:
     return raw
 
 
+def _parse_plain_text(file_path: Path) -> List[Dict[str, Any]]:
+    """
+    .md / .txt sources already ARE the content -- routing them through a
+    layout-detection tool built for scanned PDFs is what was failing here.
+    No parser, local or LLM, is needed for either backend.
+    """
+    text = normalise_text(file_path.read_text(encoding="utf-8"))
+    return [{"type": "text", "text": text}] if text else []
+
+
 def _resolve_image_paths(content_list: List[Dict[str, Any]], parse_dir: Path) -> int:
     """
     Turn every relative `img_path` into a verified absolute path.
@@ -181,27 +198,47 @@ def _resolve_image_paths(content_list: List[Dict[str, Any]], parse_dir: Path) ->
     return resolved
 
 
-def parse_single_document(file_path: Path, cfg: Stage2Config) -> Dict[str, Any]:
+def parse_single_document(
+    file_path: Path, cfg: Stage2Config, llm: Optional[LLMClient] = None
+) -> Dict[str, Any]:
     """
     Parse one document into structured JSON, keeping its image crops on disk.
 
     Never raises: returns a result dict whose "status" the caller inspects.
     That is a deliberate contract, and the retry loop below honours it.
+
+    `llm` is required only when `cfg.parser_type == "llm"`; plain text
+    sources and the local mineru/docling backends never touch it.
     """
     t0 = time.time()
     parse_dir = PATHS.parsed / doc_slug(file_path.name)
     parse_dir.mkdir(parents=True, exist_ok=True)
 
     try:
-        parser = get_parser(cfg)
-
-        raw = parser.parse_document(
-            file_path=str(file_path),
-            output_dir=str(parse_dir),  # <-- the fix: crops land here and stay
-            method=cfg.parse_method,
-        )
-        content_list = _normalise_parser_return(raw)
-        images_resolved = _resolve_image_paths(content_list, parse_dir)
+        # .md / .txt are already plain text -- no layout parser, local or
+        # LLM, has anything to do here. Routing them through one is exactly
+        # what produces "Mineru command failed" on a markdown file.
+        if source_type_for(file_path) == "text":
+            content_list = _parse_plain_text(file_path)
+            images_resolved = 0
+        elif cfg.parser_type.lower() == "llm":
+            if llm is None:
+                raise RuntimeError(
+                    "Stage2Config.parser_type='llm' but no LLMClient was passed "
+                    "to run_stage2_parsing() -- build one with build_llm_client() "
+                    "and pass it in.")
+            from .llm_parsing import parse_document_with_llm
+            content_list = parse_document_with_llm(file_path, parse_dir, llm)
+            images_resolved = sum(1 for i in content_list if i.get("img_path"))
+        else:
+            parser = get_parser(cfg)
+            raw = parser.parse_document(
+                file_path=str(file_path),
+                output_dir=str(parse_dir),  # <-- the fix: crops land here and stay
+                method=cfg.parse_method,
+            )
+            content_list = _normalise_parser_return(raw)
+            images_resolved = _resolve_image_paths(content_list, parse_dir)
 
         content_types: Dict[str, int] = {}
         for item in content_list:
@@ -284,7 +321,9 @@ def parsed_json_path(file_path: Path) -> Path:
     return PATHS.parsed / f"{doc_slug(file_path.name)}.json"
 
 
-def process_document_with_retry(file_path: Path, cfg: Stage2Config) -> Dict[str, Any]:
+def process_document_with_retry(
+    file_path: Path, cfg: Stage2Config, llm: Optional[LLMClient] = None
+) -> Dict[str, Any]:
     """
     Parse one document, retrying on failure.
 
@@ -296,7 +335,7 @@ def process_document_with_retry(file_path: Path, cfg: Stage2Config) -> Dict[str,
     last_error = "unknown"
 
     for attempt in range(1, cfg.max_retries + 1):
-        result = parse_single_document(file_path, cfg)
+        result = parse_single_document(file_path, cfg, llm)
 
         if result["status"] == "success" and cfg.validate_output:
             ok, msg = validate_parsed_output(result)
@@ -374,8 +413,15 @@ class Stage2Checkpoint:
             return cls(started_at=datetime.now().isoformat(timespec="seconds"))
 
 
-def run_stage2_parsing(cfg: Stage2Config) -> Dict[str, Any]:
-    """Parse every document in raw_sources into structured JSON."""
+def run_stage2_parsing(cfg: Stage2Config, llm: Optional[LLMClient] = None) -> Dict[str, Any]:
+    """
+    Parse every document in raw_sources into structured JSON.
+
+    `llm` is required when `cfg.parser_type == "llm"`. Note that with a
+    local-weights LLMClient, `cfg.max_workers` above 1 means concurrent
+    calls into the same in-process model -- set it to 1 unless the provider
+    is an API (Anthropic/OpenAI-shaped clients handle concurrency fine).
+    """
     from concurrent.futures import ThreadPoolExecutor, as_completed
 
     stage2_log.info("=" * 70)
@@ -409,7 +455,9 @@ def run_stage2_parsing(cfg: Stage2Config) -> Dict[str, Any]:
 
     t0 = time.time()
     with ThreadPoolExecutor(max_workers=cfg.max_workers) as pool:
-        futures = {pool.submit(process_document_with_retry, d, cfg): d for d in todo}
+        futures = {
+            pool.submit(process_document_with_retry, d, cfg, llm): d for d in todo
+        }
 
         with tqdm(total=len(todo), desc="Parsing documents") as bar:
             for fut in as_completed(futures):

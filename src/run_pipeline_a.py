@@ -160,18 +160,21 @@ def report_stage4(stage4_summary) -> None:
 
 
 def main() -> None:
+    # -- the shared model, built once and reused by every stage below --------
+    # (Stage 2 only actually calls it when Stage2Config.parser_type == "llm".)
+    llm = build_llm_client(logger=stage3_log)
+
     # -- Stage 1: speech to text ---------------------------------------------
     stage1_summary = run_stage1_speech(Stage1Config())
     print(stage1_summary)
 
     # -- Stage 2: layout parsing ----------------------------------------------
-    stage2_summary = run_stage2_parsing(Stage2Config())
+    stage2_summary = run_stage2_parsing(Stage2Config(), llm=llm)
     print(stage2_summary)
     report_stage2(analyse_parsed_outputs())
 
     # -- Stage 3: describing figures in context --------------------------------
     stage3_cfg = Stage3Config()
-    llm = build_llm_client(logger=stage3_log)
     fallback_describer = FallbackDescriber(llm, stage3_cfg)
     stage3_summary = run_stage3(llm, fallback_describer, stage3_cfg)
     report_stage3(stage3_summary, llm)

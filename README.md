@@ -48,7 +48,13 @@ Five sub-stages, each in its own module, run in order by `run_pipeline_a.py`:
 1. **`stage1_speech.py`** — Whisper (`faster-whisper`) transcribes audio/video,
    keeping word-level timestamps for provenance.
 2. **`stage2_parsing.py`** — MinerU/Docling parse documents into structured
-   layout JSON (text, figures, tables, equations).
+   layout JSON (text, figures, tables, equations). `.md`/`.txt` sources skip
+   this entirely — they're already plain text. Both MinerU and Docling run
+   real layout-detection models locally, which can be heavy on a machine
+   with no spare GPU; set `PARSER_TYPE=llm` in `.env` to parse with the
+   shared model instead (`llm_parsing.py` — renders each page and asks it to
+   transcribe, no local model at all). See
+   [Model provider](#model-provider).
 3. **`stage3_figures.py`** — the shared model (see
    [Model provider](#model-provider)) describes every figure *in the context
    of the surrounding document*, one call per document rather than one call
@@ -174,7 +180,8 @@ Optional, per stage or provider (each skips cleanly and logs a warning if
 its dependency is missing, rather than failing the whole run):
 
 - `faster-whisper`, `ffmpeg` — Stage 1 (speech to text)
-- `raganything[all]` (MinerU / Docling) — Stage 2 (document parsing)
+- `raganything[all]` (MinerU / Docling) — Stage 2, `PARSER_TYPE=mineru`/`docling` (default)
+- `pymupdf` — Stage 2, `PARSER_TYPE=llm` only
 - `torch`, `transformers`, optionally `flash-attn` — `LLM_PROVIDER=local`
   only (Stage 3 onward)
 - `anthropic` — `LLM_PROVIDER=anthropic` only

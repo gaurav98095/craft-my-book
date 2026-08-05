@@ -8,8 +8,14 @@ Pillow
 faster-whisper
 # also requires the ffmpeg binary on PATH
 
-# Stage 2 — document layout parsing (skipped, with a warning, if absent)
+# Stage 2 — document layout parsing. Only needed for PARSER_TYPE=mineru or
+# =docling (the default); skip entirely if using PARSER_TYPE=llm instead.
 raganything[all]
+
+# Stage 2 — PARSER_TYPE=llm only: renders PDF pages to images so the shared
+# LLM_PROVIDER model can transcribe them, instead of running a local
+# layout-detection model. No system Poppler/etc install needed.
+pymupdf
 
 # The shared LLM layer (src/llm/) — install only what LLM_PROVIDER needs.
 # See .env.example. Each provider's SDK is imported lazily, so you only need
@@ -27,7 +33,7 @@ accelerate
 # LLM_PROVIDER=anthropic
 # anthropic
 
-# LLM_PROVIDER=openai / groq / vllm / openai_compatible
+# LLM_PROVIDER=openai / groq / gemini / vllm / openai_compatible
 # openai
 
 # Stage 5's source index, and Stage C's draft index / repetition detection

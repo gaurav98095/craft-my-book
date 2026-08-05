@@ -28,7 +28,7 @@ _DEFAULT_MODEL_BY_PROVIDER = {
     "anthropic": "claude-sonnet-4-5-20250929",
     "openai": "gpt-4o",
     "groq": "llama-3.3-70b-versatile",
-    "gemini": "gemini-2.5-flash",
+    "gemini": "gemini-3.6-flash",
 }
 
 _BASE_URL_BY_PROVIDER = {

@@ -1,0 +1,30 @@
+{
+  "documents": [
+    {
+      "order": 1,
+      "filename": "attention_mechanisms_56e85c.txt",
+      "doc_slug": "attention_mechanisms_56e85c",
+      "source_document": "attention_mechanisms.md",
+      "source_type": "text",
+      "start": 211,
+      "end": 3625,
+      "length": 3414,
+      "figure_ids": [],
+      "timestamp_index": [],
+      "timestamp_index_exact": true
+    },
+    {
+      "order": 2,
+      "filename": "retrieval_augmented_generation_510f8d.txt",
+      "doc_slug": "retrieval_augmented_generation_510f8d",
+      "source_document": "retrieval_augmented_generation.md",
+      "source_type": "text",
+      "start": 3849,
+      "end": 7365,
+      "length": 3516,
+      "figure_ids": [],
+      "timestamp_index": [],
+      "timestamp_index_exact": true
+    }
+  ]
+}
