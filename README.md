@@ -2,9 +2,12 @@
 
 An agentic pipeline that turns raw source material — PDFs, slide decks, lecture
 recordings — into a full-length, written technical book. One shared model
-(a multimodal LLM) does everything except speech-to-text: describing figures,
-tagging concepts, planning chapters, writing prose, reviewing it, editing it,
-and cataloguing what it wrote.
+does everything except speech-to-text: describing figures, tagging concepts,
+planning chapters, writing prose, reviewing it, editing it, and cataloguing
+what it wrote. Which model that actually is — local weights, Anthropic, Groq,
+a self-hosted vLLM/Ollama/whatever server — is a one-line change in `.env`;
+no pipeline code knows or cares which provider is behind it. See
+[Model provider](#model-provider).
 
 The system runs in three stages, each independently runnable and resumable:
 

@@ -8,7 +8,7 @@ from tqdm.auto import tqdm
 
 from ..ingestion.setup import PATHS
 from .setup import PipelineBConfig, toc_log
-from .llm import BookLLM
+from ..llm import LLMClient
 from .checkpoints import StepCheckpoints
 
 NORMALIZATION_SCHEMA = {
@@ -24,7 +24,7 @@ NORMALIZATION_SCHEMA = {
 class TagNormalizer:
     """Collapses raw tags into a canonical vocabulary, keeping every alias."""
 
-    def __init__(self, llm: BookLLM, cfg: PipelineBConfig):
+    def __init__(self, llm: LLMClient, cfg: PipelineBConfig):
         self.llm = llm
         self.cfg = cfg
         self.system_prompt = """You are an expert knowledge engineer building a controlled vocabulary.
@@ -81,6 +81,7 @@ Be conservative. Wrongly merging two concepts is far worse than leaving them sep
                 NORMALIZATION_SCHEMA,
                 max_tokens=self.cfg.max_tokens_normalization,
                 temperature=0.0,
+                max_attempts=self.cfg.structured_max_attempts,
             )
 
             handled = set()

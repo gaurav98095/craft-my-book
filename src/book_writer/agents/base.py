@@ -12,6 +12,7 @@ not the whole generation.
 from typing import Any, Dict, List, Optional, Tuple
 
 from ...ingestion.setup import count_tokens
+from ...llm import LLMClient
 from ..setup import WriterConfig, writer_log
 
 
@@ -20,7 +21,7 @@ class BaseAgent:
 
     name = "BaseAgent"
 
-    def __init__(self, llm, cfg: WriterConfig):
+    def __init__(self, llm: LLMClient, cfg: WriterConfig):
         self.llm = llm
         self.cfg = cfg
         self.calls = 0

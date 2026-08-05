@@ -8,7 +8,7 @@ from typing import Dict, List
 from tqdm.auto import tqdm
 
 from .setup import BookSizeConfig, PipelineBConfig, toc_log
-from .llm import BookLLM
+from ..llm import LLMClient
 
 THEME_SCHEMA = {
     "themes": [
@@ -33,7 +33,7 @@ ASSIGNMENT_SCHEMA = {
 class ThemeDiscovery:
     """Phase 1: identify the chapter-sized themes. Prompt preserved verbatim."""
 
-    def __init__(self, llm: BookLLM, cfg: PipelineBConfig):
+    def __init__(self, llm: LLMClient, cfg: PipelineBConfig):
         self.llm = llm
         self.cfg = cfg
         self.system_prompt = f"""You are an expert curriculum designer analyzing concepts to identify major learning themes.
@@ -77,6 +77,7 @@ Identify {cfg.size.target_chapters_min}-{cfg.size.target_chapters_max} themes th
             THEME_SCHEMA,
             max_tokens=self.cfg.max_tokens_structure,
             temperature=0.3,
+            max_attempts=self.cfg.structured_max_attempts,
         )
 
         themes = (reply or {}).get("themes", [])
@@ -98,7 +99,7 @@ Identify {cfg.size.target_chapters_min}-{cfg.size.target_chapters_max} themes th
 class TagAssigner:
     """Phase 2: every concept into exactly one chapter. Prompt preserved verbatim."""
 
-    def __init__(self, llm: BookLLM, cfg: PipelineBConfig):
+    def __init__(self, llm: LLMClient, cfg: PipelineBConfig):
         self.llm = llm
         self.cfg = cfg
         self.system_prompt = """You are an expert curriculum designer assigning concepts to chapters.
@@ -140,6 +141,7 @@ Assign EVERY concept to a theme. Minimize uncategorized."""
                 ASSIGNMENT_SCHEMA,
                 max_tokens=self.cfg.max_tokens_structure,
                 temperature=0.2,
+                max_attempts=self.cfg.structured_max_attempts,
             )
 
             for tag, theme_id in (reply or {}).get("assignments", {}).items():
@@ -250,7 +252,7 @@ class SectionFormer:
     `section_id` and there is no third level anywhere in the design.
     """
 
-    def __init__(self, llm: BookLLM, cfg: PipelineBConfig):
+    def __init__(self, llm: LLMClient, cfg: PipelineBConfig):
         self.llm = llm
         self.cfg = cfg
         self.system_prompt = """You are an expert curriculum designer organizing concepts into sections.
@@ -283,6 +285,7 @@ Every concept above must appear in exactly one section."""
             SECTION_SCHEMA,
             max_tokens=self.cfg.max_tokens_structure,
             temperature=0.3,
+            max_attempts=self.cfg.structured_max_attempts,
         )
 
         sections = []
@@ -333,7 +336,7 @@ class CurriculumOrderer:
     book. So the returned list is reconciled against the input.
     """
 
-    def __init__(self, llm: BookLLM, cfg: PipelineBConfig):
+    def __init__(self, llm: LLMClient, cfg: PipelineBConfig):
         self.llm = llm
         self.cfg = cfg
         self.notes: List[str] = []
@@ -367,7 +370,8 @@ Return every id you were given, exactly once."""
         )
 
         reply = self.llm.generate_structured(
-            self.system_prompt, user, ORDER_SCHEMA, max_tokens=1_500, temperature=0.2
+            self.system_prompt, user, ORDER_SCHEMA, max_tokens=1_500, temperature=0.2,
+            max_attempts=self.cfg.structured_max_attempts,
         )
 
         proposed = [str(i) for i in (reply or {}).get("ordered_ids", [])]

@@ -6,6 +6,7 @@ from collections import defaultdict
 from datetime import datetime
 from typing import Any, Dict, List
 
+from ..llm import LLMClient
 from .setup import BOOK, writer_log
 from .ledger import BookLedger
 from .draft_store import DraftStore
@@ -131,7 +132,7 @@ def find_rough_seams(
     return seams[:max_report]
 
 
-def contradiction_sweep(ledger: BookLedger, llm, max_pairs: int = 40) -> List[Dict]:
+def contradiction_sweep(ledger: BookLedger, llm: LLMClient, max_pairs: int = 40) -> List[Dict]:
     """
     Pass 4. Cluster the claims log by tag; within each cluster ask whether
     any pair conflicts. Because claims are short and typed, this is a few
@@ -236,7 +237,7 @@ def run_finishing_passes(
     ledger: BookLedger,
     drafts: DraftStore,
     source: SourceMemory,
-    llm,
+    llm: LLMClient,
     run_contradictions: bool = True,
 ) -> Dict[str, Any]:
     """All five passes, then write the book directory."""

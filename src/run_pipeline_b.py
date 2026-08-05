@@ -11,13 +11,12 @@ storage/toc.md, and the tag artifacts Pipeline C's Book Ledger seeds from.
 import json
 from pathlib import Path
 
-from .ingestion.setup import PATHS, BOOK_MODEL
-from .ingestion.stage3_figures import BookModel, Stage3Config
-from .toc.setup import PipelineBConfig, log_config
-from .toc.llm import BookLLM
+from .ingestion.setup import PATHS
+from .toc.setup import PipelineBConfig, log_config, toc_log
 from .toc.checkpoints import StepCheckpoints
 from .toc.step1_load_chunks import load_chunks_from_pipeline_a
 from .toc.run import run_pipeline_b
+from .llm import build_llm_client
 
 
 def report(toc, validation) -> None:
@@ -100,21 +99,17 @@ def report(toc, validation) -> None:
 
 def main() -> None:
     bcfg = PipelineBConfig()
-    log_config(bcfg)
-
-    book_model = BookModel(Stage3Config(model_name=bcfg.model_name))
-    book_llm = BookLLM(bcfg, existing_model=book_model)
-    print(f"Pipeline B model: {book_llm.model_id}")
-    if book_llm.model_id != BOOK_MODEL:
-        print(f"  NOTE: the design specifies {BOOK_MODEL}")
+    llm = build_llm_client(logger=toc_log)
+    log_config(bcfg, llm.model_id)
 
     ckpt = StepCheckpoints(PATHS.checkpoints, enabled=bcfg.resume)
 
     chunks = load_chunks_from_pipeline_a(bcfg)
     print(f"Step 1: {len(chunks)} chunks loaded (chunking happened once, in Stage 4)")
 
-    toc, validation = run_pipeline_b(chunks, book_llm, bcfg, ckpt)
+    toc, validation = run_pipeline_b(chunks, llm, bcfg, ckpt)
     report(toc, validation)
+    llm.cleanup()
 
 
 if __name__ == "__main__":

@@ -7,6 +7,7 @@ import json
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
+from ..llm import LLMClient
 from .setup import BookPaths, writer_log
 from .ledger import BookLedger
 from .constitution import Constitution
@@ -154,7 +155,7 @@ class ConversationMemory:
     """
 
     def __init__(
-        self, paths: BookPaths, llm, threshold: int = 12, keep_recent: int = 6
+        self, paths: BookPaths, llm: LLMClient, threshold: int = 12, keep_recent: int = 6
     ):
         self.dir = paths.history
         self.dir.mkdir(parents=True, exist_ok=True)

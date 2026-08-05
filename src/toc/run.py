@@ -6,7 +6,7 @@ from typing import Dict, List, Tuple
 
 from ..ingestion.setup import PATHS
 from .setup import PipelineBConfig, toc_log
-from .llm import BookLLM
+from ..llm import LLMClient
 from .checkpoints import StepCheckpoints
 from .step2_tag_extraction import run_step2_extraction
 from .step3_tag_normalization import run_step3_normalization
@@ -22,7 +22,7 @@ from tqdm.auto import tqdm
 
 
 def run_pipeline_b(
-    chunks: List[Dict], llm: BookLLM, cfg: PipelineBConfig, ckpt: StepCheckpoints
+    chunks: List[Dict], llm: LLMClient, cfg: PipelineBConfig, ckpt: StepCheckpoints
 ) -> Tuple[Dict, Dict]:
     """The eight steps, in order."""
     toc_log.info("=" * 70)

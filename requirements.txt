@@ -2,6 +2,7 @@
 tqdm
 tiktoken
 python-dotenv
+Pillow
 
 # Stage 1 — speech to text (skipped, with a warning, if absent)
 faster-whisper
@@ -10,13 +11,24 @@ faster-whisper
 # Stage 2 — document layout parsing (skipped, with a warning, if absent)
 raganything[all]
 
-# Stage 3 onward — the shared vision-language model (required from Stage 3 on)
+# The shared LLM layer (src/llm/) — install only what LLM_PROVIDER needs.
+# See .env.example. Each provider's SDK is imported lazily, so you only need
+# the one you've actually selected.
+
+# LLM_PROVIDER=local (default): a transformers checkpoint, loaded in-process.
+# Required from Stage 3 on.
 torch
 transformers>=4.57.0
 accelerate
-Pillow
-# flash-attn is optional; Stage 3 falls back to sdpa, then eager, if absent
+# flash-attn is optional; the local provider falls back to sdpa, then eager,
+# if absent
 # flash-attn --no-build-isolation
+
+# LLM_PROVIDER=anthropic
+# anthropic
+
+# LLM_PROVIDER=openai / groq / vllm / openai_compatible
+# openai
 
 # Stage 5's source index, and Stage C's draft index / repetition detection
 # (skipped, with a warning, if absent)

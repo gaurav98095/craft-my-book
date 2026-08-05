@@ -5,7 +5,7 @@ from typing import Any, Dict, List, Optional, Tuple
 from tqdm.auto import tqdm
 
 from .setup import PipelineBConfig, toc_log
-from .llm import BookLLM
+from ..llm import LLMClient
 from .checkpoints import StepCheckpoints
 
 EXTRACTION_SCHEMA = {
@@ -30,7 +30,7 @@ class FineGrainedTagExtractor:
     categories, and they were doing their job.
     """
 
-    def __init__(self, llm: BookLLM, cfg: PipelineBConfig):
+    def __init__(self, llm: LLMClient, cfg: PipelineBConfig):
         self.llm = llm
         self.cfg = cfg
         self.stats = {"chunks": 0, "failed": 0, "tags": 0, "relationships": 0}
@@ -190,6 +190,7 @@ Remember:
                 EXTRACTION_SCHEMA,
                 max_tokens=self.cfg.max_tokens_extraction,
                 temperature=0.2,
+                max_attempts=self.cfg.structured_max_attempts,
             )
             self._absorb(chunk, reply, chunk_tags, relationships, summaries)
 

@@ -302,7 +302,7 @@ def normalise_text(text: str) -> str:
 #
 #   | Speech to text                      | Whisper large-v3 |
 #   | Everything else - figure description, tagging, planning, writing,
-#     editing, cataloguing                | Qwen3.6-27B (multimodal, 256K)     |
+#     editing, cataloguing                | one shared LLMClient               |
 #
 # Using one language model for the whole pipeline is a deliberate choice:
 #
@@ -310,19 +310,9 @@ def normalise_text(text: str) -> str:
 #    that later writes the chapter about it. That alone does more for
 #    consistency than any amount of prompt tuning."
 #
-# So the id lives here, once, and every stage and every agent reads it. Change
-# it here and the whole system changes with it.
-BOOK_MODEL = os.getenv("BOOK_MODEL_ID", "Qwen/Qwen3.6-27B-Instruct")
-
-# If BOOK_MODEL cannot be pulled on this machine, the loader steps down this
-# ladder rather than dying -- but it logs a warning and every stage report
-# prints the model it actually ran on, so a downgrade is never silent.
-BOOK_MODEL_FALLBACKS = [
-    "Qwen/Qwen3-VL-30B-A3B-Instruct",
-    "Qwen/Qwen3-VL-8B-Instruct",
-    "Qwen/Qwen2-VL-7B-Instruct",
-]
-
+# Which model that actually is -- local weights, Anthropic, Groq, a
+# self-hosted server -- is decided once, for the whole system, by .env.
+# See `src.llm.build_llm_client`.
 WHISPER_MODEL = os.getenv("WHISPER_MODEL_SIZE", "large-v3")
 
 

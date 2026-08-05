@@ -5,7 +5,7 @@ from datetime import datetime
 from typing import Any, Dict, List
 
 from .setup import BookSizeConfig, PipelineBConfig, toc_log
-from .llm import BookLLM
+from ..llm import LLMClient
 
 
 def rank_chunks_for_tags(
@@ -73,7 +73,7 @@ def allocate_word_counts(sections: List[Dict], size: BookSizeConfig) -> None:
 def build_final_toc(
     ordered_chapters: List[Dict],
     chunk_tags: Dict[str, List[str]],
-    llm: BookLLM,
+    llm: LLMClient,
     cfg: PipelineBConfig,
 ) -> Dict[str, Any]:
     """

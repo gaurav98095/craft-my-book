@@ -2,15 +2,13 @@
 Step B0 — Setup: configuration and logging for Pipeline B.
 
 Pipeline B reads what Pipeline A produced. It does not re-chunk, it does not
-invent its own directory layout, and it does not load its own model -- PATHS
-and BOOK_MODEL are reused from `src.ingestion.setup`, and the
-loaded model from Stage 3 is reused where possible (see `toc.llm.BookLLM`).
+invent its own directory layout, and it does not load its own model --
+which model answers its calls is decided once, for the whole system, by
+`.env` (see `src.llm.build_llm_client`), and the same client is reused here.
 """
 
 import logging
 from dataclasses import dataclass, field
-
-from ..ingestion.setup import BOOK_MODEL
 
 
 def make_toc_logger(name: str, logfile: str) -> logging.Logger:
@@ -72,9 +70,8 @@ class PipelineBConfig:
     """Configuration for Pipeline B - TOC generation."""
 
     # -- Model ---------------------------------------------------------------
-    # No model settings beyond the id: Pipeline B reuses the transformers model
-    # Stage 3 loaded, with its dtype and attention backend already resolved.
-    model_name: str = BOOK_MODEL
+    # No model settings here: which model backs `LLMClient` is decided once,
+    # for the whole system, by .env (see src.llm.build_llm_client).
     temperature: float = 0.3
     structured_max_attempts: int = 3
 
@@ -115,9 +112,9 @@ class PipelineBConfig:
     resume: bool = True
 
 
-def log_config(bcfg: PipelineBConfig) -> None:
+def log_config(bcfg: PipelineBConfig, model_id: str) -> None:
     toc_log.info("Pipeline B configuration:")
-    toc_log.info(f"  model            : {bcfg.model_name}")
+    toc_log.info(f"  model            : {model_id}")
     toc_log.info(f"  target pages     : {bcfg.size.target_pages}")
     toc_log.info(f"  → total words    : {bcfg.size.total_words:,}")
     toc_log.info(

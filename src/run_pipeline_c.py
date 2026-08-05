@@ -11,10 +11,7 @@ Start with RUN_LIMIT = 1 below: read the first section and its ledger diff
 before letting the full run go unattended.
 """
 
-from .ingestion.setup import BOOK_MODEL
-from .ingestion.stage3_figures import BookModel, Stage3Config
-from .toc.setup import PipelineBConfig
-from .toc.llm import BookLLM
+from .llm import build_llm_client
 
 from .book_writer.setup import BOOK, WriterConfig, writer_log
 from .book_writer.constitution import Constitution, DEFAULT_CONSTITUTION
@@ -41,8 +38,7 @@ RUN_LIMIT = 1
 
 def main() -> None:
     # -- the shared model -----------------------------------------------------
-    book_model = BookModel(Stage3Config(model_name=BOOK_MODEL))
-    llm = BookLLM(PipelineBConfig(model_name=BOOK_MODEL), existing_model=book_model)
+    llm = build_llm_client(logger=writer_log)
     writer_log.info(f"Pipeline C model: {llm.model_id}")
 
     wcfg = WriterConfig()
@@ -139,6 +135,8 @@ def main() -> None:
         )
     else:
         print("No sections written yet — raise RUN_LIMIT and re-run.")
+
+    llm.cleanup()
 
 
 if __name__ == "__main__":

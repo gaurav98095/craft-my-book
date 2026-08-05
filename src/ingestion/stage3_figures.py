@@ -1,6 +1,5 @@
 """Stage 3 — Describing Figures, In Context."""
 
-import os
 import re
 import json
 import time
@@ -11,38 +10,25 @@ from pathlib import Path
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional, Tuple
 
-import torch
 from PIL import Image
 from tqdm.auto import tqdm
 
-from .setup import (
-    PATHS,
-    make_logger,
-    doc_slug,
-    normalise_text,
-    load_vocabulary_from_pipeline_b,
-    BOOK_MODEL,
-    BOOK_MODEL_FALLBACKS,
-)
+from .setup import PATHS, make_logger, doc_slug, normalise_text, \
+    load_vocabulary_from_pipeline_b
+from ..llm import LLMClient
 
 stage3_log = make_logger("stage3.describe", "stage3_describe.log")
 
 
 @dataclass
 class Stage3Config:
-    """Configuration for Stage 3 - Describing figures in context."""
+    """
+    Configuration for Stage 3 - Describing figures in context.
 
-    # -- Model ---------------------------------------------------------------
-    # One model for the whole system (design doc, section 1). BOOK_MODEL is
-    # defined once in ingestion.setup so Pipelines B and C use the identical
-    # checkpoint.
-    model_name: str = BOOK_MODEL
-    dtype: str = "bfloat16"
-    # False keeps the stack pure transformers + PyTorch: the loader ladder is
-    # then sdpa -> eager, both native torch attention. Flip on only if the
-    # optional flash-attn package is installed and you want the speedup.
-    use_flash_attention: bool = False
-    max_image_side: int = 1280  # downscale before the vision encoder
+    Which model answers these calls -- local weights, Anthropic, Groq, a
+    self-hosted server -- is not configured here. It is decided once, for
+    the whole system, by `.env` (see `src.llm.build_llm_client`).
+    """
 
     # -- Whole-document description (the design's primary path) --------------
     describe_whole_document: bool = True
@@ -78,350 +64,6 @@ class Stage3Config:
     force_reconvert: bool = False
     continue_on_error: bool = True
     log_vlm_responses: bool = False
-
-
-# ---------------------------------------------------------------------------
-# The model wrapper, with structured generation
-# ---------------------------------------------------------------------------
-
-
-def extract_json_object(raw: str) -> Tuple[Optional[Any], Optional[str]]:
-    """
-    Pull the first balanced JSON object out of a model reply.
-
-    Models wrap JSON in prose, in ``` fences, or both. Naive `json.loads` fails
-    on all of it, and a regex for `\\{.*\\}` breaks on nested braces and on any
-    brace inside a string. So we scan for the first '{' and walk forward
-    counting depth, skipping over string literals and their escapes.
-
-    Returns (object, None) or (None, reason). The reason is fed back to the
-    model verbatim on the retry -- an error message is a far better repair
-    instruction than "try again".
-    """
-    text = raw.strip()
-    text = re.sub(r"^```(?:json)?", "", text).strip()
-    text = re.sub(r"```$", "", text).strip()
-
-    start = text.find("{")
-    if start == -1:
-        return None, "the reply contained no '{'"
-
-    depth, in_string, escaped = 0, False, False
-    for i in range(start, len(text)):
-        ch = text[i]
-        if in_string:
-            if escaped:
-                escaped = False
-            elif ch == "\\":
-                escaped = True
-            elif ch == '"':
-                in_string = False
-        else:
-            if ch == '"':
-                in_string = True
-            elif ch == "{":
-                depth += 1
-            elif ch == "}":
-                depth -= 1
-                if depth == 0:
-                    try:
-                        return json.loads(text[start : i + 1]), None
-                    except json.JSONDecodeError as exc:
-                        return None, f"JSON was malformed: {exc.msg} at char {exc.pos}"
-    return None, "braces never balanced - the reply was probably truncated"
-
-
-class BookModel:
-    """
-    The single multimodal model the whole system uses.
-
-    Two capabilities:
-      * `generate()`          -- free text
-      * `generate_structured()` -- a JSON object matching a schema, with repair
-    """
-
-    def __init__(self, cfg: Stage3Config):
-        self.cfg = cfg
-        self.model = None
-        self.processor = None
-        self.model_id = None
-        self.calls = 0
-        self.structured_repairs = 0
-        self.structured_failures = 0
-        self._load()
-
-    # ---------------------------------------------------------------- load --
-    def _load(self) -> None:
-        from transformers import AutoProcessor
-
-        try:  # transformers >= 4.45
-            from transformers import AutoModelForImageTextToText as AutoVLM
-        except ImportError:
-            from transformers import AutoModelForVision2Seq as AutoVLM
-
-        dtype = {"bfloat16": torch.bfloat16, "float16": torch.float16}.get(
-            self.cfg.dtype, torch.float32
-        )
-
-        # transformers renamed `torch_dtype` to `dtype` in 4.56. Getting this
-        # wrong is not an error: the unknown keyword is absorbed into **kwargs
-        # and the model silently loads in float32 -- twice the VRAM, half the
-        # speed, no warning. So pick the spelling this version understands.
-        import transformers
-
-        version = tuple(int(x) for x in transformers.__version__.split(".")[:2])
-        dtype_kwarg = "dtype" if version >= (4, 56) else "torch_dtype"
-        stage3_log.info(
-            f"transformers {transformers.__version__} -> using {dtype_kwarg}="
-        )
-
-        backends = (["flash_attention_2"] if self.cfg.use_flash_attention else []) + [
-            "sdpa",
-            "eager",
-        ]
-
-        # The design names one model. If this machine cannot pull it, we say so
-        # loudly and step down the ladder rather than dying -- but the model we
-        # actually loaded is printed in every stage report, so a downgrade can
-        # never pass unnoticed.
-        candidates = [self.cfg.model_name] + [
-            m for m in BOOK_MODEL_FALLBACKS if m != self.cfg.model_name
-        ]
-
-        # HF_TOKEN is picked up automatically by huggingface_hub if set, but
-        # passing it explicitly means a gated repo (Qwen included, on some
-        # accounts) fails with a clear error instead of a silent 401 deep
-        # inside from_pretrained.
-        hf_token = os.getenv("HF_TOKEN") or None
-        device_map = os.getenv("DEVICE_MAP", "auto")
-
-        t0 = time.time()
-        last_error = None
-        for model_id in candidates:
-            for backend in backends:
-                try:
-                    stage3_log.info(f"Loading {model_id} (attn={backend}) ...")
-                    self.model = AutoVLM.from_pretrained(
-                        model_id,
-                        device_map=device_map,
-                        attn_implementation=backend,
-                        token=hf_token,
-                        **{dtype_kwarg: dtype},
-                    )
-                    self.processor = AutoProcessor.from_pretrained(
-                        model_id, token=hf_token)
-                    self.model_id = model_id
-                    break
-                except Exception as exc:
-                    last_error = exc
-                    stage3_log.warning(
-                        f"  {model_id} / attn={backend}: "
-                        f"{type(exc).__name__}: {str(exc)[:150]}"
-                    )
-            if self.model is not None:
-                break
-            stage3_log.warning(f"Could not load {model_id}; trying the next candidate")
-
-        if self.model is None:
-            raise RuntimeError(
-                f"No usable model. The design specifies {BOOK_MODEL}; none of "
-                f"{candidates} could be loaded. Last error: {last_error}"
-            )
-
-        if self.model_id != BOOK_MODEL:
-            stage3_log.warning("=" * 70)
-            stage3_log.warning(
-                f"RUNNING ON {self.model_id}, NOT the design's {BOOK_MODEL}."
-            )
-            stage3_log.warning(
-                "Descriptions and, later, prose will differ from the design's"
-            )
-            stage3_log.warning(
-                "assumptions. Set BOOK_MODEL in ingestion.setup once the"
-            )
-            stage3_log.warning("intended checkpoint is reachable.")
-            stage3_log.warning("=" * 70)
-
-        self.model.eval()
-        n_params = sum(p.numel() for p in self.model.parameters())
-        stage3_log.info(
-            f"Ready in {time.time() - t0:.1f}s: {self.model_id} "
-            f"({n_params / 1e9:.1f}B params)"
-        )
-
-    # ------------------------------------------------------------- helpers --
-    def _fit(self, image: Image.Image) -> Image.Image:
-        side = max(image.size)
-        if side <= self.cfg.max_image_side:
-            return image
-        scale = self.cfg.max_image_side / side
-        return image.resize(
-            (max(1, int(image.width * scale)), max(1, int(image.height * scale))),
-            Image.LANCZOS,
-        )
-
-    # ------------------------------------------------------------- chatting --
-    @torch.inference_mode()
-    def _chat(
-        self,
-        content: List[Dict[str, Any]],
-        system: Optional[str] = None,
-        max_new_tokens: int = 800,
-        temperature: float = 0.2,
-    ) -> str:
-        """
-        Run one turn over interleaved content blocks.
-
-        `content` uses the design document's shape:
-            {"type": "text",  "text": "..."}
-            {"type": "image", "image": <path or PIL.Image>}
-        """
-        images: List[Image.Image] = []
-        blocks: List[Dict[str, Any]] = []
-
-        for block in content:
-            if block.get("type") == "image":
-                img = block["image"]
-                if not isinstance(img, Image.Image):
-                    img = Image.open(str(img))
-                    img.load()
-                images.append(self._fit(img.convert("RGB")))
-                blocks.append({"type": "image"})
-            else:
-                blocks.append({"type": "text", "text": block.get("text", "")})
-
-        messages: List[Dict[str, Any]] = []
-        if system:
-            messages.append(
-                {"role": "system", "content": [{"type": "text", "text": system}]}
-            )
-        messages.append({"role": "user", "content": blocks})
-
-        text = self.processor.apply_chat_template(
-            messages, tokenize=False, add_generation_prompt=True
-        )
-
-        proc_kwargs: Dict[str, Any] = {"text": [text], "return_tensors": "pt"}
-        if images:
-            proc_kwargs["images"] = images
-        inputs = self.processor(**proc_kwargs).to(self.model.device)
-
-        gen_kwargs: Dict[str, Any] = {
-            "max_new_tokens": max_new_tokens,
-            "do_sample": temperature > 0,
-        }
-        if temperature > 0:
-            # Passing temperature with do_sample=False is ignored and warns,
-            # so only set it when it will actually be used.
-            gen_kwargs["temperature"] = temperature
-            gen_kwargs["top_p"] = 0.9
-
-        output_ids = self.model.generate(**inputs, **gen_kwargs)
-        self.calls += 1
-
-        trimmed = [out[len(inp) :] for inp, out in zip(inputs["input_ids"], output_ids)]
-        return self.processor.batch_decode(
-            trimmed, skip_special_tokens=True, clean_up_tokenization_spaces=False
-        )[0].strip()
-
-    # ------------------------------------------------------------ public API --
-    def generate(
-        self,
-        prompt: str,
-        system: Optional[str] = None,
-        images: Optional[List[Any]] = None,
-        max_new_tokens: int = 400,
-        temperature: float = 0.2,
-    ) -> str:
-        content: List[Dict[str, Any]] = [
-            {"type": "image", "image": im} for im in (images or [])
-        ]
-        content.append({"type": "text", "text": prompt})
-        return self._chat(
-            content,
-            system=system,
-            max_new_tokens=max_new_tokens,
-            temperature=temperature,
-        )
-
-    def generate_structured(
-        self,
-        content: List[Dict[str, Any]],
-        schema: Dict[str, Any],
-        system: Optional[str] = None,
-        max_new_tokens: int = 2_000,
-        temperature: float = 0.0,
-        max_attempts: Optional[int] = None,
-    ) -> Optional[Dict]:
-        """
-        Ask for one JSON object matching `schema`, repairing on parse failure.
-
-        This is the capability the design assumes throughout
-        (`llm.generate_structured(content, system=..., schema=...)`). Every
-        agent in Pipelines B and C needs it.
-
-        The repair loop is the part worth keeping: on a failure we re-prompt
-        with the PARSER'S OWN ERROR appended. "braces never balanced - the reply
-        was probably truncated" is a far more useful instruction than "try
-        again", and it usually succeeds on the second attempt.
-
-        Returns the object, or None once the attempts are exhausted. Callers
-        must handle None -- a missing description is recoverable, a fabricated
-        one is not.
-        """
-        attempts = max_attempts or self.cfg.structured_max_attempts
-
-        instruction = (
-            "Reply with ONE JSON object and nothing else: no prose, "
-            "no markdown fence, no explanation.\n"
-            "It must match this shape exactly:\n"
-            f"{json.dumps(schema, indent=2)}"
-        )
-        base = list(content) + [{"type": "text", "text": instruction}]
-        repair_note = None
-
-        for attempt in range(1, attempts + 1):
-            blocks = (
-                base
-                if repair_note is None
-                else base
-                + [
-                    {
-                        "type": "text",
-                        "text": f"YOUR PREVIOUS REPLY COULD NOT BE PARSED: {repair_note}\n"
-                        f"Reply with only the JSON object.",
-                    }
-                ]
-            )
-
-            raw = self._chat(
-                blocks,
-                system=system,
-                max_new_tokens=max_new_tokens,
-                temperature=temperature,
-            )
-            obj, reason = extract_json_object(raw)
-
-            if obj is not None:
-                missing = [k for k in schema if k not in obj]
-                if not missing:
-                    return obj
-                reason = f"missing required key(s): {missing}"
-
-            stage3_log.warning(f"  structured attempt {attempt}/{attempts}: {reason}")
-            self.structured_repairs += 1
-            repair_note = reason
-
-        self.structured_failures += 1
-        stage3_log.error(f"  structured generation failed after {attempts} attempts")
-        return None
-
-    def cleanup(self) -> None:
-        del self.model, self.processor
-        self.model = self.processor = None
-        if torch.cuda.is_available():
-            torch.cuda.empty_cache()
-        stage3_log.info("Model released.")
 
 
 # ---------------------------------------------------------------------------
@@ -568,7 +210,7 @@ def build_document_view(
 
 
 def describe_document(
-    parsed: Dict[str, Any], model: BookModel, cfg: Stage3Config
+    parsed: Dict[str, Any], model: LLMClient, cfg: Stage3Config
 ) -> Tuple[Dict[str, Dict[str, str]], str, List[Dict[str, Any]]]:
     """
     The design's Stage 3: describe every figure in a document in one call.
@@ -664,11 +306,12 @@ def describe_document(
                 )
 
         reply = model.generate_structured(
-            content,
-            schema=DESCRIBE_SCHEMA,
             system=DESCRIBE_SYSTEM,
-            max_new_tokens=cfg.document_call_max_tokens,
+            user=content,
+            schema=DESCRIBE_SCHEMA,
+            max_tokens=cfg.document_call_max_tokens,
             temperature=0.0,
+            max_attempts=cfg.structured_max_attempts,
         )
 
         if not reply:
@@ -712,7 +355,7 @@ def describe_document(
 class FallbackDescriber:
     """Per-figure description with page context, plus a content-hash cache."""
 
-    def __init__(self, model: BookModel, cfg: Stage3Config):
+    def __init__(self, model: LLMClient, cfg: Stage3Config):
         self.model = model
         self.cfg = cfg
         self._cache: Dict[str, Optional[str]] = {}
@@ -792,10 +435,10 @@ class FallbackDescriber:
 
         try:
             reply = self.model.generate(
-                prompt="\n\n".join(prompt_parts),
                 system=DESCRIBE_SYSTEM,
+                user="\n\n".join(prompt_parts),
                 images=[entry["image"]] if entry["image"] is not None else None,
-                max_new_tokens=self.cfg.figure_max_tokens,
+                max_tokens=self.cfg.figure_max_tokens,
                 temperature=self.cfg.temperature,
             )
             self.stats["calls"] += 1
@@ -841,7 +484,7 @@ class FallbackDescriber:
 
 def convert_document(
     parsed: Dict[str, Any],
-    model: BookModel,
+    model: LLMClient,
     fallback: FallbackDescriber,
     cfg: Stage3Config,
 ) -> Tuple[str, List[Dict], Dict[str, Any]]:
@@ -994,7 +637,7 @@ TRANSCRIPT_CLEAN_SYSTEM = (
 
 
 def clean_transcript_text(
-    raw_text: str, vocabulary: List[str], model: BookModel, cfg: Stage3Config
+    raw_text: str, vocabulary: List[str], model: LLMClient, cfg: Stage3Config
 ) -> Tuple[str, Dict[str, int]]:
     """Clean window by window, falling back to raw on any doubt."""
     guard = {"windows": 0, "kept_clean": 0, "kept_raw": 0}
@@ -1021,9 +664,9 @@ def clean_transcript_text(
         )
         try:
             cleaned = model.generate(
-                prompt=prompt,
                 system=TRANSCRIPT_CLEAN_SYSTEM,
-                max_new_tokens=int(len(window) / 2.5) + 128,
+                user=prompt,
+                max_tokens=int(len(window) / 2.5) + 128,
                 temperature=0.0,
             ).strip()
         except Exception as exc:
@@ -1046,7 +689,7 @@ def clean_transcript_text(
     return "\n\n".join(cleaned_windows), guard
 
 
-def convert_transcripts(model: BookModel, cfg: Stage3Config) -> List[Dict[str, Any]]:
+def convert_transcripts(model: LLMClient, cfg: Stage3Config) -> List[Dict[str, Any]]:
     """
     Turn every Stage 1 transcript into a converted text file with a
     character -> timestamp index attached.
@@ -1124,7 +767,7 @@ def convert_transcripts(model: BookModel, cfg: Stage3Config) -> List[Dict[str, A
 
 
 def run_stage3(
-    model: BookModel, fallback: FallbackDescriber, cfg: Stage3Config
+    model: LLMClient, fallback: FallbackDescriber, cfg: Stage3Config
 ) -> Dict[str, Any]:
     stage3_log.info("=" * 70)
     stage3_log.info("STAGE 3: DESCRIBING FIGURES IN CONTEXT")

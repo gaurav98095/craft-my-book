@@ -21,9 +21,9 @@ from .ingestion.stage2_parsing import (
 )
 from .ingestion.stage3_figures import (
     Stage3Config,
-    BookModel,
     FallbackDescriber,
     run_stage3,
+    stage3_log,
 )
 from .ingestion.stage4_chunking import (
     Stage4Config,
@@ -31,6 +31,7 @@ from .ingestion.stage4_chunking import (
     get_chunk_neighbourhood,
 )
 from .ingestion.stage5_source_index import build_source_index
+from .llm import LLMClient, build_llm_client
 
 
 def report_stage2(summary) -> None:
@@ -63,7 +64,7 @@ def report_stage2(summary) -> None:
     print("=" * 70)
 
 
-def report_stage3(stage3_summary, model: BookModel) -> None:
+def report_stage3(stage3_summary, model: LLMClient) -> None:
     t = stage3_summary["totals"]
     kept = t["figures_kept"] + t["tables_kept"] + t["equations_kept"]
     seen = kept + t["decorative"]
@@ -170,10 +171,11 @@ def main() -> None:
 
     # -- Stage 3: describing figures in context --------------------------------
     stage3_cfg = Stage3Config()
-    book_model = BookModel(stage3_cfg)
-    fallback_describer = FallbackDescriber(book_model, stage3_cfg)
-    stage3_summary = run_stage3(book_model, fallback_describer, stage3_cfg)
-    report_stage3(stage3_summary, book_model)
+    llm = build_llm_client(logger=stage3_log)
+    fallback_describer = FallbackDescriber(llm, stage3_cfg)
+    stage3_summary = run_stage3(llm, fallback_describer, stage3_cfg)
+    report_stage3(stage3_summary, llm)
+    llm.cleanup()
 
     # -- Stage 4: consolidation and chunking -----------------------------------
     stage4_summary = run_stage4(Stage4Config())
