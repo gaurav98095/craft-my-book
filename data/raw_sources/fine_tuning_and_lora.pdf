@@ -1,0 +1,100 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+5 0 obj
+<< /Length 2271 >>
+stream
+BT
+/F1 11 Tf
+14 TL
+56 770 Td
+(Lecture 9 -- Fine-Tuning and LoRA) Tj
+T*
+T*
+(Full fine-tuning updates every weight in a pretrained model. For a 7B) Tj
+T*
+(parameter model that means 7 billion gradients and 7 billion optimizer) Tj
+T*
+(states in memory -- Adam alone doubles that -- which is why full) Tj
+T*
+(fine-tuning of large models is usually out of reach on a single GPU.) Tj
+T*
+T*
+(LoRA \(Low-Rank Adaptation\) freezes the original weight matrix W entirely) Tj
+T*
+(and learns a much smaller update instead. Rather than learning a full) Tj
+T*
+(delta-W the same shape as W, LoRA factors the update into two small) Tj
+T*
+(matrices A and B, of rank r, so that delta-W = B times A. If W is) Tj
+T*
+(d by k, A is r by k and B is d by r, with r chosen far smaller than) Tj
+T*
+(d or k -- often 8, 16, or 32. The number of trainable parameters drops) Tj
+T*
+(from d times k to r times \(d plus k\), which for typical transformer) Tj
+T*
+(layer sizes is a reduction of two to three orders of magnitude.) Tj
+T*
+T*
+(At inference time the adapter can be merged back into the base weights) Tj
+T*
+(\(W plus B times A\) with zero added latency, or kept separate so a single) Tj
+T*
+(base model can swap between many task-specific adapters cheaply -- this) Tj
+T*
+(is the mechanism that makes serving many fine-tuned variants of one) Tj
+T*
+(base model practical.) Tj
+T*
+T*
+(Quantization is a complementary technique: it reduces the precision each) Tj
+T*
+(weight is stored at, typically from 16-bit floats to 8-bit or 4-bit) Tj
+T*
+(integers, cutting memory further. QLoRA combines both: the frozen base) Tj
+T*
+(model is quantized to 4 bits, while the small LoRA adapters are trained) Tj
+T*
+(in higher precision on top of it -- which is what makes it possible to) Tj
+T*
+(fine-tune a 65B parameter model on a single consumer GPU.) Tj
+T*
+T*
+(The key tradeoff across all of this is rank r. Too low, and the adapter) Tj
+T*
+(lacks the capacity to represent the target task's shift in behaviour.) Tj
+T*
+(Too high, and LoRA approaches the cost of full fine-tuning without a) Tj
+T*
+(clear accuracy benefit -- in practice r is usually chosen well below) Tj
+T*
+(the point where returns diminish, since low-rank updates generalize) Tj
+T*
+(better than high-rank ones on small fine-tuning datasets.) Tj
+ET
+endstream
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000241 00000 n 
+0000000311 00000 n 
+trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+2634
+%%EOF

@@ -17,7 +17,6 @@ venv/
 env/
 
 # Pipeline data and generated artifacts (large, regenerable, not source)
-data/
 storage/
 output/
 *.log
