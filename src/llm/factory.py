@@ -38,7 +38,7 @@ LOCAL_MODEL_FALLBACKS = [
 
 _DEFAULT_MODEL_BY_PROVIDER = {
     "anthropic": "claude-sonnet-4-5-20250929",
-    "openai": "gpt-4o",
+    "openai": "gpt-5.6-luna",  # OpenAI's own cost-optimized model, as of this writing
     "groq": "llama-3.3-70b-versatile",
     "gemini": "gemini-3.6-flash",
 }

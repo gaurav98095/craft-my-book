@@ -1,1 +1,8 @@
-{}
+{
+  "dense vector embedding": [
+    "embedding model"
+  ],
+  "reranker": [
+    "top-k candidate retrieval"
+  ]
+}

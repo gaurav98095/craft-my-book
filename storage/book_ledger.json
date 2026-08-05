@@ -1,0 +1,786 @@
+{
+  "version": 1,
+  "last_section": "sec_01_01",
+  "concepts": {
+    "rnn_hidden_state_bottleneck": {
+      "canonical_name": "rnn hidden-state bottleneck",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "rnn hidden-state bottleneck"
+      ],
+      "prerequisites": []
+    },
+    "self_attention": {
+      "canonical_name": "self-attention",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "self-attention"
+      ],
+      "prerequisites": []
+    },
+    "query_vector": {
+      "canonical_name": "query vector",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "query vector"
+      ],
+      "prerequisites": []
+    },
+    "key_vector": {
+      "canonical_name": "key vector",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "key vector"
+      ],
+      "prerequisites": []
+    },
+    "value_vector": {
+      "canonical_name": "value vector",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "value vector"
+      ],
+      "prerequisites": []
+    },
+    "scaled_dot_product_attention": {
+      "canonical_name": "scaled dot-product attention",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "scaled dot-product attention"
+      ],
+      "prerequisites": []
+    },
+    "square_root_key_dimension_score_scaling": {
+      "canonical_name": "square-root key-dimension score scaling",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "square-root key-dimension score scaling"
+      ],
+      "prerequisites": []
+    },
+    "softmax_attention_normalization": {
+      "canonical_name": "softmax attention normalization",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "softmax attention normalization"
+      ],
+      "prerequisites": []
+    },
+    "value_vector_weighted_aggregation": {
+      "canonical_name": "value-vector weighted aggregation",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "value-vector weighted aggregation"
+      ],
+      "prerequisites": []
+    },
+    "multi_head_attention": {
+      "canonical_name": "multi-head attention",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "multi-head attention"
+      ],
+      "prerequisites": []
+    },
+    "learned_q_k_v_projections": {
+      "canonical_name": "learned q/k/v projections",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "learned q/k/v projections"
+      ],
+      "prerequisites": []
+    },
+    "head_output_concatenation": {
+      "canonical_name": "head-output concatenation",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "head-output concatenation"
+      ],
+      "prerequisites": []
+    },
+    "attention_output_projection": {
+      "canonical_name": "attention output projection",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "attention output projection"
+      ],
+      "prerequisites": []
+    },
+    "permutation_invariance": {
+      "canonical_name": "permutation invariance",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "permutation invariance"
+      ],
+      "prerequisites": []
+    },
+    "sinusoidal_positional_encoding": {
+      "canonical_name": "sinusoidal positional encoding",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "sinusoidal positional encoding"
+      ],
+      "prerequisites": []
+    },
+    "learned_positional_embedding": {
+      "canonical_name": "learned positional embedding",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "learned positional embedding"
+      ],
+      "prerequisites": []
+    },
+    "rotary_position_embedding": {
+      "canonical_name": "rotary position embedding",
+      "aliases": [
+        "rotary position embedding (rope)"
+      ],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "rotary position embedding"
+      ],
+      "prerequisites": []
+    },
+    "key_value_cache": {
+      "canonical_name": "key-value cache",
+      "aliases": [
+        "kv cache"
+      ],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "key-value cache"
+      ],
+      "prerequisites": []
+    },
+    "linear_key_value_cache_memory_growth": {
+      "canonical_name": "linear key-value cache memory growth",
+      "aliases": [
+        "linear kv-cache memory growth"
+      ],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "linear key-value cache memory growth"
+      ],
+      "prerequisites": []
+    },
+    "retrieval_augmented_generation": {
+      "canonical_name": "retrieval-augmented generation",
+      "aliases": [
+        "retrieval-augmented generation (rag)"
+      ],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "retrieval-augmented generation"
+      ],
+      "prerequisites": []
+    },
+    "external_corpus_passage_retrieval": {
+      "canonical_name": "external-corpus passage retrieval",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "external-corpus passage retrieval"
+      ],
+      "prerequisites": []
+    },
+    "structure_aware_document_chunking": {
+      "canonical_name": "structure-aware document chunking",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "structure-aware document chunking"
+      ],
+      "prerequisites": []
+    },
+    "self_contained_chunk": {
+      "canonical_name": "self-contained chunk",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "self-contained chunk"
+      ],
+      "prerequisites": []
+    },
+    "embedding_model": {
+      "canonical_name": "embedding model",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "embedding model"
+      ],
+      "prerequisites": []
+    },
+    "dense_vector_embedding": {
+      "canonical_name": "dense vector embedding",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "dense vector embedding"
+      ],
+      "prerequisites": [
+        "embedding model"
+      ]
+    },
+    "semantic_vector_similarity": {
+      "canonical_name": "semantic vector similarity",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "semantic vector similarity"
+      ],
+      "prerequisites": []
+    },
+    "vector_database": {
+      "canonical_name": "vector database",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "vector database"
+      ],
+      "prerequisites": []
+    },
+    "approximate_nearest_neighbor_search": {
+      "canonical_name": "approximate nearest-neighbor search",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "approximate nearest-neighbor search"
+      ],
+      "prerequisites": []
+    },
+    "top_k_candidate_retrieval": {
+      "canonical_name": "top-k candidate retrieval",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "top-k candidate retrieval"
+      ],
+      "prerequisites": []
+    },
+    "reranker": {
+      "canonical_name": "reranker",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "reranker"
+      ],
+      "prerequisites": [
+        "top-k candidate retrieval"
+      ]
+    },
+    "cross_encoder_reranking": {
+      "canonical_name": "cross-encoder reranking",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "cross-encoder reranking"
+      ],
+      "prerequisites": []
+    },
+    "independent_embedding_retrieval": {
+      "canonical_name": "independent embedding retrieval",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "independent embedding retrieval"
+      ],
+      "prerequisites": []
+    },
+    "undersized_chunk_context_loss": {
+      "canonical_name": "undersized chunk context loss",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "undersized chunk context loss"
+      ],
+      "prerequisites": []
+    },
+    "oversized_chunk_semantic_dilution": {
+      "canonical_name": "oversized chunk semantic dilution",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "oversized chunk semantic dilution"
+      ],
+      "prerequisites": []
+    },
+    "1_500_2_000_token_chunk_target": {
+      "canonical_name": "1,500-2,000-token chunk target",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "1,500-2,000-token chunk target"
+      ],
+      "prerequisites": []
+    },
+    "zero_overlap_chunking": {
+      "canonical_name": "zero-overlap chunking",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "zero-overlap chunking"
+      ],
+      "prerequisites": []
+    },
+    "provenance_metadata": {
+      "canonical_name": "provenance metadata",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "provenance metadata"
+      ],
+      "prerequisites": []
+    },
+    "document_identifier_metadata": {
+      "canonical_name": "document identifier metadata",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "document identifier metadata"
+      ],
+      "prerequisites": []
+    },
+    "source_type_metadata": {
+      "canonical_name": "source-type metadata",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "source-type metadata"
+      ],
+      "prerequisites": []
+    },
+    "recording_timestamp_metadata": {
+      "canonical_name": "recording timestamp metadata",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "recording timestamp metadata"
+      ],
+      "prerequisites": []
+    },
+    "rnn": {
+      "canonical_name": "RNN",
+      "aliases": [],
+      "definition": "An RNN processes a sequence in order, one token at a time.",
+      "defined_in": "sec_01_01",
+      "depth": "explained",
+      "referenced_in": [],
+      "source_tags": [],
+      "prerequisites": []
+    },
+    "hidden_state": {
+      "canonical_name": "hidden state",
+      "aliases": [],
+      "definition": "At every position, the hidden state contains the information the network has chosen to carry forward from the prefix seen so far.",
+      "defined_in": "sec_01_01",
+      "depth": "explained",
+      "referenced_in": [],
+      "source_tags": [],
+      "prerequisites": []
+    },
+    "initial_state": {
+      "canonical_name": "initial state",
+      "aliases": [],
+      "definition": "The model begins with an initial state, often a vector of zeros.",
+      "defined_in": "sec_01_01",
+      "depth": "explained",
+      "referenced_in": [],
+      "source_tags": [],
+      "prerequisites": []
+    },
+    "final_state": {
+      "canonical_name": "final state",
+      "aliases": [],
+      "definition": "The final state therefore acts as a compact representation of everything the RNN has processed.",
+      "defined_in": "sec_01_01",
+      "depth": "explained",
+      "referenced_in": [],
+      "source_tags": [],
+      "prerequisites": []
+    },
+    "recurrent_transition": {
+      "canonical_name": "recurrent transition",
+      "aliases": [],
+      "definition": "Information needed at the end must pass through every intermediate recurrent transition, and each transition can weaken or overwrite it.",
+      "defined_in": "sec_01_01",
+      "depth": "explained",
+      "referenced_in": [
+        "sec_01_01"
+      ],
+      "source_tags": [],
+      "prerequisites": []
+    },
+    "bottleneck": {
+      "canonical_name": "bottleneck",
+      "aliases": [],
+      "definition": "The bottleneck therefore defines a requirement for the next architecture.",
+      "defined_in": "sec_01_01",
+      "depth": "explained",
+      "referenced_in": [],
+      "source_tags": [],
+      "prerequisites": []
+    }
+  },
+  "claims": [
+    {
+      "claim_id": "claim_sec_01_01_001",
+      "text": "An RNN processes a sequence in order, one token at a time.",
+      "confidence": "strong",
+      "section_id": "sec_01_01",
+      "tags": [
+        "Sequential recurrent processing",
+        "Hidden-state updating",
+        "Sequence compression into a fixed-capacity state",
+        "Information dilution and overwriting across recurrent updates",
+        "Long-range dependency failure",
+        "The requirement for direct learned access across sequence positions"
+      ]
+    },
+    {
+      "claim_id": "claim_sec_01_01_002",
+      "text": "The hidden state is updated by combining the current token representation with the previous hidden state: h_t = f(x_t, h_{t-1}).",
+      "confidence": "strong",
+      "section_id": "sec_01_01",
+      "tags": [
+        "Sequential recurrent processing",
+        "Hidden-state updating",
+        "Sequence compression into a fixed-capacity state",
+        "Information dilution and overwriting across recurrent updates",
+        "Long-range dependency failure",
+        "The requirement for direct learned access across sequence positions"
+      ]
+    },
+    {
+      "claim_id": "claim_sec_01_01_003",
+      "text": "In a basic RNN, the learned function applies a transformation to both inputs and passes the result through a nonlinear activation.",
+      "confidence": "strong",
+      "section_id": "sec_01_01",
+      "tags": [
+        "Sequential recurrent processing",
+        "Hidden-state updating",
+        "Sequence compression into a fixed-capacity state",
+        "Information dilution and overwriting across recurrent updates",
+        "Long-range dependency failure",
+        "The requirement for direct learned access across sequence positions"
+      ]
+    },
+    {
+      "claim_id": "claim_sec_01_01_004",
+      "text": "A downstream component can use the state at position t to make a prediction based on the sequence through that position.",
+      "confidence": "strong",
+      "section_id": "sec_01_01",
+      "tags": [
+        "Sequential recurrent processing",
+        "Hidden-state updating",
+        "Sequence compression into a fixed-capacity state",
+        "Information dilution and overwriting across recurrent updates",
+        "Long-range dependency failure",
+        "The requirement for direct learned access across sequence positions"
+      ]
+    },
+    {
+      "claim_id": "claim_sec_01_01_005",
+      "text": "An RNN's hidden state has a fixed size regardless of whether the model has read five tokens or five hundred.",
+      "confidence": "strong",
+      "section_id": "sec_01_01",
+      "tags": [
+        "Sequential recurrent processing",
+        "Hidden-state updating",
+        "Sequence compression into a fixed-capacity state",
+        "Information dilution and overwriting across recurrent updates",
+        "Long-range dependency failure",
+        "The requirement for direct learned access across sequence positions"
+      ]
+    },
+    {
+      "claim_id": "claim_sec_01_01_006",
+      "text": "The model cannot preserve an independent representation of every earlier token in a separate channel; it must update the existing summary.",
+      "confidence": "strong",
+      "section_id": "sec_01_01",
+      "tags": [
+        "Sequential recurrent processing",
+        "Hidden-state updating",
+        "Sequence compression into a fixed-capacity state",
+        "Information dilution and overwriting across recurrent updates",
+        "Long-range dependency failure",
+        "The requirement for direct learned access across sequence positions"
+      ]
+    },
+    {
+      "claim_id": "claim_sec_01_01_007",
+      "text": "New information can alter dimensions that carried earlier information, causing some details to be weakened or overwritten entirely.",
+      "confidence": "moderate",
+      "section_id": "sec_01_01",
+      "tags": [
+        "Sequential recurrent processing",
+        "Hidden-state updating",
+        "Sequence compression into a fixed-capacity state",
+        "Information dilution and overwriting across recurrent updates",
+        "Long-range dependency failure",
+        "The requirement for direct learned access across sequence positions"
+      ]
+    },
+    {
+      "claim_id": "claim_sec_01_01_008",
+      "text": "Preserving an early detail becomes more difficult as the distance to the later prediction grows because the detail is repeatedly mixed with later information.",
+      "confidence": "strong",
+      "section_id": "sec_01_01",
+      "tags": [
+        "Sequential recurrent processing",
+        "Hidden-state updating",
+        "Sequence compression into a fixed-capacity state",
+        "Information dilution and overwriting across recurrent updates",
+        "Long-range dependency failure",
+        "The requirement for direct learned access across sequence positions"
+      ]
+    },
+    {
+      "claim_id": "claim_sec_01_01_009",
+      "text": "Two sequences that differ in an early token can have sufficiently similar hidden states near the end that a downstream component cannot reliably distinguish them.",
+      "confidence": "strong",
+      "section_id": "sec_01_01",
+      "tags": [
+        "Sequential recurrent processing",
+        "Hidden-state updating",
+        "Sequence compression into a fixed-capacity state",
+        "Information dilution and overwriting across recurrent updates",
+        "Long-range dependency failure",
+        "The requirement for direct learned access across sequence positions"
+      ]
+    },
+    {
+      "claim_id": "claim_sec_01_01_010",
+      "text": "The loss of a distinction does not necessarily mean the model misread the early token; it may have represented it correctly and then lost it during later updates.",
+      "confidence": "strong",
+      "section_id": "sec_01_01",
+      "tags": [
+        "Sequential recurrent processing",
+        "Hidden-state updating",
+        "Sequence compression into a fixed-capacity state",
+        "Information dilution and overwriting across recurrent updates",
+        "Long-range dependency failure",
+        "The requirement for direct learned access across sequence positions"
+      ]
+    },
+    {
+      "claim_id": "claim_sec_01_01_011",
+      "text": "A prediction at one position should not depend exclusively on information compressed into the single state produced by every preceding position.",
+      "confidence": "strong",
+      "section_id": "sec_01_01",
+      "tags": [
+        "Sequential recurrent processing",
+        "Hidden-state updating",
+        "Sequence compression into a fixed-capacity state",
+        "Information dilution and overwriting across recurrent updates",
+        "Long-range dependency failure",
+        "The requirement for direct learned access across sequence positions"
+      ]
+    },
+    {
+      "claim_id": "claim_sec_01_01_012",
+      "text": "A useful architecture should support nearby syntactic connections and much earlier references without assuming that every dependency has the same distance or importance.",
+      "confidence": "strong",
+      "section_id": "sec_01_01",
+      "tags": [
+        "Sequential recurrent processing",
+        "Hidden-state updating",
+        "Sequence compression into a fixed-capacity state",
+        "Information dilution and overwriting across recurrent updates",
+        "Long-range dependency failure",
+        "The requirement for direct learned access across sequence positions"
+      ]
+    }
+  ],
+  "promises": [
+    {
+      "promise_id": "promise_sec_01_01_001",
+      "text": "The next mechanism will allow positions to compare their needs with information held at other positions and provide direct, learned access across the sequence.",
+      "target_hint": "sec_01_02",
+      "made_in": "sec_01_01",
+      "status": "open"
+    }
+  ],
+  "examples": {
+    "the customer cannot access the account": {
+      "introduced_in": "sec_01_01",
+      "files_shown": [],
+      "current_state": "The example is used to show that the final state must preserve the subject established by \"customer,\" the failure expressed by \"cannot access,\" the relevant relationships, and the latest token \"account.\" The section concludes that these earlier details may be weakened, overwritten, or become indistinguishable through repeated updates, motivating direct access to earlier representations.",
+      "last_touched": "sec_01_01"
+    }
+  },
+  "coverage": {
+    "chunk_0001": {
+      "used_by": [
+        "sec_01_01"
+      ],
+      "depth": "primary"
+    }
+  },
+  "section_summaries": {
+    "sec_01_01": {
+      "abstract": "This section taught that an RNN processes tokens sequentially by repeatedly updating a fixed-size hidden state. The state compresses the prefix seen so far, allowing downstream predictions, but every new token must be mixed into the same representation. As sequences lengthen, earlier details can be weakened, overwritten, or become indistinguishable, creating failures on long-range dependencies. The section therefore established the need for an architecture that lets a position access relevant earlier representations directly rather than relying exclusively on one recurrent summary.",
+      "teaches": [
+        "Sequential recurrent processing",
+        "Hidden-state updating",
+        "Sequence compression into a fixed-capacity state",
+        "Information dilution and overwriting across recurrent updates",
+        "Long-range dependency failure",
+        "The requirement for direct learned access across sequence positions"
+      ],
+      "assumes": [
+        "Token",
+        "Vector",
+        "Prediction",
+        "Nonlinear activation",
+        "Downstream component",
+        "Context",
+        "Representation",
+        "Dependency",
+        "Architecture"
+      ],
+      "closing_line": "It replaces exclusive reliance on one evolving recurrent summary with direct, learned access across the sequence.",
+      "title": "Sequence Compression into a Recurrent State",
+      "word_count": 980
+    }
+  },
+  "chapter_rollups": {
+    "ch01": "This chapter built an understanding of how recurrent neural networks process sequences through repeated updates to a fixed-size hidden state. It showed that this state compresses the preceding prefix, requiring each new token to overwrite or merge information into the same representation. By the end, the reader can explain why long sequences weaken or obscure earlier details, identify the resulting long-range dependency problem, and motivate architectures that directly access relevant earlier representations."
+  },
+  "figures_used": {}
+}

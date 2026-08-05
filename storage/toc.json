@@ -1,0 +1,611 @@
+{
+  "book_title": "Attention and Retrieval Systems",
+  "generated_at": "2026-08-06T00:43:06",
+  "model": "gpt-5.6-luna",
+  "chapters": [
+    {
+      "chapter_id": "ch01",
+      "title": "Sequence Modeling Limitations",
+      "description": "The representational bottlenecks that motivate attention-based sequence modeling, especially the difficulty of compressing long sequences into a recurrent hidden state.",
+      "order": 1,
+      "section_count": 1
+    },
+    {
+      "chapter_id": "ch02",
+      "title": "Self-Attention Mechanics",
+      "description": "The core computation of self-attention, including query-key matching, scaled scores, normalization, and weighted value aggregation.",
+      "order": 2,
+      "section_count": 8
+    },
+    {
+      "chapter_id": "ch03",
+      "title": "Positional Representation",
+      "description": "Methods for restoring token-order information in attention models, which are otherwise permutation-invariant.",
+      "order": 3,
+      "section_count": 4
+    },
+    {
+      "chapter_id": "ch04",
+      "title": "Multi-Head Attention and Projections",
+      "description": "How attention is expanded into multiple representational subspaces and recombined through learned projections.",
+      "order": 4,
+      "section_count": 4
+    },
+    {
+      "chapter_id": "ch05",
+      "title": "Attention Inference and Key-Value Caching",
+      "description": "Inference-time reuse of previously computed attention states and the resulting memory-scaling tradeoffs.",
+      "order": 5,
+      "section_count": 2
+    },
+    {
+      "chapter_id": "ch06",
+      "title": "Retrieval-Augmented Generation Architecture",
+      "description": "The overall pattern of augmenting generation with information retrieved from an external document collection.",
+      "order": 6,
+      "section_count": 2
+    },
+    {
+      "chapter_id": "ch07",
+      "title": "Document Chunking and Context Design",
+      "description": "Partitioning source documents into retrieval units while balancing contextual completeness against semantic dilution and retrieval efficiency.",
+      "order": 7,
+      "section_count": 6
+    },
+    {
+      "chapter_id": "ch08",
+      "title": "Dense Embeddings and Vector Retrieval",
+      "description": "Representing text as dense semantic vectors and efficiently searching vector indexes for relevant candidate passages.",
+      "order": 8,
+      "section_count": 7
+    },
+    {
+      "chapter_id": "ch09",
+      "title": "Retrieval Provenance and Metadata",
+      "description": "Preserving source identity and contextual metadata so retrieved content can be traced, filtered, evaluated, and cited.",
+      "order": 9,
+      "section_count": 4
+    },
+    {
+      "chapter_id": "ch10",
+      "title": "Candidate Reranking",
+      "description": "Improving initial vector-retrieval results with more expressive relevance scoring over query-passage pairs.",
+      "order": 10,
+      "section_count": 2
+    }
+  ],
+  "sections": [
+    {
+      "section_id": "sec_01_01",
+      "chapter_id": "ch01",
+      "title": "Sequence Compression into a Recurrent State",
+      "tags": [
+        "rnn hidden-state bottleneck"
+      ],
+      "chunk_ids": [
+        "chunk_0001"
+      ],
+      "estimated_word_count": 900,
+      "order": 1
+    },
+    {
+      "section_id": "sec_02_01",
+      "chapter_id": "ch02",
+      "title": "Constructing a Query Vector",
+      "tags": [
+        "query vector"
+      ],
+      "chunk_ids": [
+        "chunk_0001"
+      ],
+      "estimated_word_count": 900,
+      "order": 1
+    },
+    {
+      "section_id": "sec_02_02",
+      "chapter_id": "ch02",
+      "title": "Constructing a Key Vector",
+      "tags": [
+        "key vector"
+      ],
+      "chunk_ids": [
+        "chunk_0001"
+      ],
+      "estimated_word_count": 900,
+      "order": 2
+    },
+    {
+      "section_id": "sec_02_03",
+      "chapter_id": "ch02",
+      "title": "Constructing a Value Vector",
+      "tags": [
+        "value vector"
+      ],
+      "chunk_ids": [
+        "chunk_0001"
+      ],
+      "estimated_word_count": 900,
+      "order": 3
+    },
+    {
+      "section_id": "sec_02_04",
+      "chapter_id": "ch02",
+      "title": "Applying Dimension-Based Score Scaling",
+      "tags": [
+        "square-root key-dimension score scaling"
+      ],
+      "chunk_ids": [
+        "chunk_0001"
+      ],
+      "estimated_word_count": 900,
+      "order": 4
+    },
+    {
+      "section_id": "sec_02_05",
+      "chapter_id": "ch02",
+      "title": "Defining the Scaled Attention Operation",
+      "tags": [
+        "scaled dot-product attention"
+      ],
+      "chunk_ids": [
+        "chunk_0001"
+      ],
+      "estimated_word_count": 900,
+      "order": 5
+    },
+    {
+      "section_id": "sec_02_06",
+      "chapter_id": "ch02",
+      "title": "Applying Softmax to Attention Scores",
+      "tags": [
+        "softmax attention normalization"
+      ],
+      "chunk_ids": [
+        "chunk_0001"
+      ],
+      "estimated_word_count": 900,
+      "order": 6
+    },
+    {
+      "section_id": "sec_02_07",
+      "chapter_id": "ch02",
+      "title": "Summing Retrieved Content",
+      "tags": [
+        "value-vector weighted aggregation"
+      ],
+      "chunk_ids": [
+        "chunk_0001"
+      ],
+      "estimated_word_count": 900,
+      "order": 7
+    },
+    {
+      "section_id": "sec_02_08",
+      "chapter_id": "ch02",
+      "title": "Understanding Self-Attention as a Complete Pipeline",
+      "tags": [
+        "self-attention"
+      ],
+      "chunk_ids": [
+        "chunk_0001"
+      ],
+      "estimated_word_count": 900,
+      "order": 8
+    },
+    {
+      "section_id": "sec_03_01",
+      "chapter_id": "ch03",
+      "title": "The Problem of Permutation Invariance",
+      "tags": [
+        "permutation invariance"
+      ],
+      "chunk_ids": [
+        "chunk_0001"
+      ],
+      "estimated_word_count": 900,
+      "order": 1
+    },
+    {
+      "section_id": "sec_03_02",
+      "chapter_id": "ch03",
+      "title": "Learned Positional Embedding",
+      "tags": [
+        "learned positional embedding"
+      ],
+      "chunk_ids": [
+        "chunk_0001"
+      ],
+      "estimated_word_count": 900,
+      "order": 2
+    },
+    {
+      "section_id": "sec_03_03",
+      "chapter_id": "ch03",
+      "title": "Sinusoidal Positional Encoding",
+      "tags": [
+        "sinusoidal positional encoding"
+      ],
+      "chunk_ids": [
+        "chunk_0001"
+      ],
+      "estimated_word_count": 900,
+      "order": 3
+    },
+    {
+      "section_id": "sec_03_04",
+      "chapter_id": "ch03",
+      "title": "Rotary Position Embedding",
+      "tags": [
+        "rotary position embedding"
+      ],
+      "chunk_ids": [
+        "chunk_0001"
+      ],
+      "estimated_word_count": 900,
+      "order": 4
+    },
+    {
+      "section_id": "sec_04_01",
+      "chapter_id": "ch04",
+      "title": "Why Multiple Attention Heads Are Needed",
+      "tags": [
+        "multi-head attention"
+      ],
+      "chunk_ids": [
+        "chunk_0001"
+      ],
+      "estimated_word_count": 900,
+      "order": 1
+    },
+    {
+      "section_id": "sec_04_02",
+      "chapter_id": "ch04",
+      "title": "Learned Query, Key, and Value Transformations",
+      "tags": [
+        "learned q/k/v projections"
+      ],
+      "chunk_ids": [
+        "chunk_0001"
+      ],
+      "estimated_word_count": 900,
+      "order": 2
+    },
+    {
+      "section_id": "sec_04_03",
+      "chapter_id": "ch04",
+      "title": "Collecting the Outputs of Attention Heads",
+      "tags": [
+        "head-output concatenation"
+      ],
+      "chunk_ids": [
+        "chunk_0001"
+      ],
+      "estimated_word_count": 900,
+      "order": 3
+    },
+    {
+      "section_id": "sec_04_04",
+      "chapter_id": "ch04",
+      "title": "The Role of the Output Transformation",
+      "tags": [
+        "attention output projection"
+      ],
+      "chunk_ids": [
+        "chunk_0001"
+      ],
+      "estimated_word_count": 900,
+      "order": 4
+    },
+    {
+      "section_id": "sec_05_01",
+      "chapter_id": "ch05",
+      "title": "Stored Attention States for Future Tokens",
+      "tags": [
+        "key-value cache"
+      ],
+      "chunk_ids": [
+        "chunk_0001"
+      ],
+      "estimated_word_count": 900,
+      "order": 1
+    },
+    {
+      "section_id": "sec_05_02",
+      "chapter_id": "ch05",
+      "title": "Sequence-Length-Dependent Memory Scaling",
+      "tags": [
+        "linear key-value cache memory growth"
+      ],
+      "chunk_ids": [
+        "chunk_0001"
+      ],
+      "estimated_word_count": 900,
+      "order": 2
+    },
+    {
+      "section_id": "sec_06_01",
+      "chapter_id": "ch06",
+      "title": "Defining the External Knowledge Corpus",
+      "tags": [
+        "external-corpus passage retrieval"
+      ],
+      "chunk_ids": [
+        "chunk_0002"
+      ],
+      "estimated_word_count": 900,
+      "order": 1
+    },
+    {
+      "section_id": "sec_06_02",
+      "chapter_id": "ch06",
+      "title": "Generating Answers Grounded in Retrieved Evidence",
+      "tags": [
+        "retrieval-augmented generation"
+      ],
+      "chunk_ids": [
+        "chunk_0002"
+      ],
+      "estimated_word_count": 900,
+      "order": 2
+    },
+    {
+      "section_id": "sec_07_01",
+      "chapter_id": "ch07",
+      "title": "Establishing the 1,500-2,000-Token Chunk Target",
+      "tags": [
+        "1,500-2,000-token chunk target"
+      ],
+      "chunk_ids": [
+        "chunk_0002"
+      ],
+      "estimated_word_count": 900,
+      "order": 1
+    },
+    {
+      "section_id": "sec_07_02",
+      "chapter_id": "ch07",
+      "title": "Preventing Context Loss in Small Chunks",
+      "tags": [
+        "undersized chunk context loss"
+      ],
+      "chunk_ids": [
+        "chunk_0002"
+      ],
+      "estimated_word_count": 900,
+      "order": 2
+    },
+    {
+      "section_id": "sec_07_03",
+      "chapter_id": "ch07",
+      "title": "Managing Semantic Dilution in Large Chunks",
+      "tags": [
+        "oversized chunk semantic dilution"
+      ],
+      "chunk_ids": [
+        "chunk_0002"
+      ],
+      "estimated_word_count": 900,
+      "order": 3
+    },
+    {
+      "section_id": "sec_07_04",
+      "chapter_id": "ch07",
+      "title": "Designing Self-Contained Retrieval Units",
+      "tags": [
+        "self-contained chunk"
+      ],
+      "chunk_ids": [
+        "chunk_0002"
+      ],
+      "estimated_word_count": 900,
+      "order": 4
+    },
+    {
+      "section_id": "sec_07_05",
+      "chapter_id": "ch07",
+      "title": "Using Document Structure as a Chunking Signal",
+      "tags": [
+        "structure-aware document chunking"
+      ],
+      "chunk_ids": [
+        "chunk_0002"
+      ],
+      "estimated_word_count": 900,
+      "order": 5
+    },
+    {
+      "section_id": "sec_07_06",
+      "chapter_id": "ch07",
+      "title": "Applying Zero-Overlap Chunking",
+      "tags": [
+        "zero-overlap chunking"
+      ],
+      "chunk_ids": [
+        "chunk_0002"
+      ],
+      "estimated_word_count": 900,
+      "order": 6
+    },
+    {
+      "section_id": "sec_08_01",
+      "chapter_id": "ch08",
+      "title": "Choosing and Using an Embedding Model",
+      "tags": [
+        "embedding model"
+      ],
+      "chunk_ids": [
+        "chunk_0002"
+      ],
+      "estimated_word_count": 900,
+      "order": 1
+    },
+    {
+      "section_id": "sec_08_02",
+      "chapter_id": "ch08",
+      "title": "Constructing Dense Vector Embeddings",
+      "tags": [
+        "dense vector embedding"
+      ],
+      "chunk_ids": [
+        "chunk_0002"
+      ],
+      "estimated_word_count": 900,
+      "order": 2
+    },
+    {
+      "section_id": "sec_08_03",
+      "chapter_id": "ch08",
+      "title": "Measuring Semantic Vector Similarity",
+      "tags": [
+        "semantic vector similarity"
+      ],
+      "chunk_ids": [
+        "chunk_0002"
+      ],
+      "estimated_word_count": 900,
+      "order": 3
+    },
+    {
+      "section_id": "sec_08_04",
+      "chapter_id": "ch08",
+      "title": "Independent Embedding Retrieval",
+      "tags": [
+        "independent embedding retrieval"
+      ],
+      "chunk_ids": [
+        "chunk_0002"
+      ],
+      "estimated_word_count": 900,
+      "order": 4
+    },
+    {
+      "section_id": "sec_08_05",
+      "chapter_id": "ch08",
+      "title": "Storing Embeddings in a Vector Database",
+      "tags": [
+        "vector database"
+      ],
+      "chunk_ids": [
+        "chunk_0002"
+      ],
+      "estimated_word_count": 900,
+      "order": 5
+    },
+    {
+      "section_id": "sec_08_06",
+      "chapter_id": "ch08",
+      "title": "Approximate Nearest-Neighbor Search",
+      "tags": [
+        "approximate nearest-neighbor search"
+      ],
+      "chunk_ids": [
+        "chunk_0002"
+      ],
+      "estimated_word_count": 900,
+      "order": 6
+    },
+    {
+      "section_id": "sec_08_07",
+      "chapter_id": "ch08",
+      "title": "Selecting Top-K Candidate Passages",
+      "tags": [
+        "top-k candidate retrieval"
+      ],
+      "chunk_ids": [
+        "chunk_0002"
+      ],
+      "estimated_word_count": 900,
+      "order": 7
+    },
+    {
+      "section_id": "sec_09_01",
+      "chapter_id": "ch09",
+      "title": "Identifying Retrieved Documents",
+      "tags": [
+        "document identifier metadata"
+      ],
+      "chunk_ids": [
+        "chunk_0002"
+      ],
+      "estimated_word_count": 900,
+      "order": 1
+    },
+    {
+      "section_id": "sec_09_02",
+      "chapter_id": "ch09",
+      "title": "Recording Where Content Came From",
+      "tags": [
+        "provenance metadata"
+      ],
+      "chunk_ids": [
+        "chunk_0002"
+      ],
+      "estimated_word_count": 900,
+      "order": 2
+    },
+    {
+      "section_id": "sec_09_03",
+      "chapter_id": "ch09",
+      "title": "Classifying Retrieved Sources",
+      "tags": [
+        "source-type metadata"
+      ],
+      "chunk_ids": [
+        "chunk_0002"
+      ],
+      "estimated_word_count": 900,
+      "order": 3
+    },
+    {
+      "section_id": "sec_09_04",
+      "chapter_id": "ch09",
+      "title": "Preserving Temporal Context",
+      "tags": [
+        "recording timestamp metadata"
+      ],
+      "chunk_ids": [
+        "chunk_0002"
+      ],
+      "estimated_word_count": 900,
+      "order": 4
+    },
+    {
+      "section_id": "sec_10_01",
+      "chapter_id": "ch10",
+      "title": "The Role of a Reranker After Initial Retrieval",
+      "tags": [
+        "reranker"
+      ],
+      "chunk_ids": [
+        "chunk_0002"
+      ],
+      "estimated_word_count": 900,
+      "order": 1
+    },
+    {
+      "section_id": "sec_10_02",
+      "chapter_id": "ch10",
+      "title": "Pairwise Query-Passage Relevance Scoring",
+      "tags": [
+        "cross-encoder reranking"
+      ],
+      "chunk_ids": [
+        "chunk_0002"
+      ],
+      "estimated_word_count": 900,
+      "order": 2
+    }
+  ],
+  "stats": {
+    "chapters": 10,
+    "sections": 40,
+    "target_sections": 175,
+    "total_estimated_words": 36000,
+    "estimated_pages": 103,
+    "chunks_assigned": 2,
+    "chunks_total": 2,
+    "chunks_unused": 0,
+    "avg_chunks_per_section": 1.0,
+    "sections_with_no_chunks": 0
+  }
+}

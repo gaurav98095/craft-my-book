@@ -1,1 +1,50 @@
-{}
+{
+  "rnn hidden-state bottleneck": [],
+  "self-attention": [],
+  "query vector": [],
+  "key vector": [],
+  "value vector": [],
+  "scaled dot-product attention": [],
+  "square-root key-dimension score scaling": [],
+  "softmax attention normalization": [],
+  "value-vector weighted aggregation": [],
+  "multi-head attention": [],
+  "learned q/k/v projections": [],
+  "head-output concatenation": [],
+  "attention output projection": [],
+  "permutation invariance": [],
+  "sinusoidal positional encoding": [],
+  "learned positional embedding": [],
+  "rotary position embedding": [
+    "rotary position embedding (rope)"
+  ],
+  "key-value cache": [
+    "kv cache"
+  ],
+  "linear key-value cache memory growth": [
+    "linear kv-cache memory growth"
+  ],
+  "retrieval-augmented generation": [
+    "retrieval-augmented generation (rag)"
+  ],
+  "external-corpus passage retrieval": [],
+  "structure-aware document chunking": [],
+  "self-contained chunk": [],
+  "embedding model": [],
+  "dense vector embedding": [],
+  "semantic vector similarity": [],
+  "vector database": [],
+  "approximate nearest-neighbor search": [],
+  "top-k candidate retrieval": [],
+  "reranker": [],
+  "cross-encoder reranking": [],
+  "independent embedding retrieval": [],
+  "undersized chunk context loss": [],
+  "oversized chunk semantic dilution": [],
+  "1,500-2,000-token chunk target": [],
+  "zero-overlap chunking": [],
+  "provenance metadata": [],
+  "document identifier metadata": [],
+  "source-type metadata": [],
+  "recording timestamp metadata": []
+}
