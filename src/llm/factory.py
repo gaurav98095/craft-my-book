@@ -64,6 +64,7 @@ def build_llm_client(logger=None) -> LLMClient:
         LLM_PROVIDER=anthropic          Claude, via the Anthropic API
         LLM_PROVIDER=openai             GPT models, via the OpenAI API
         LLM_PROVIDER=groq               any model Groq hosts
+        LLM_PROVIDER=gemini             Gemini, via its OpenAI-compatible endpoint
         LLM_PROVIDER=vllm               a self-hosted vLLM server
         LLM_PROVIDER=openai_compatible  anything else speaking that API shape
                                          (Ollama, LM Studio, TGI, ...)
@@ -117,4 +118,4 @@ def build_llm_client(logger=None) -> LLMClient:
 
     raise ValueError(
         f"Unknown LLM_PROVIDER={provider!r}. Expected one of: local, anthropic, "
-        f"openai, groq, vllm, openai_compatible.")
+        f"openai, groq, gemini, vllm, openai_compatible.")

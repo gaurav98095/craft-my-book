@@ -25,7 +25,7 @@ raw sources  --[A: ingestion]-->  chunked corpus  --[B: toc]-->  toc.json  --[C:
 
 ```bash
 pip install -r requirements.txt   # see "Dependencies" below
-cp .env.example .env              # fill in HF_TOKEN if your model needs one
+cp .env.example .env              # defaults to local weights; see "Model provider" to use an API instead
 
 # drop PDFs / slides / audio / video into data/raw_sources/, then:
 python -m src.run_pipeline_a      # ingest sources -> chunked corpus
@@ -49,10 +49,11 @@ Five sub-stages, each in its own module, run in order by `run_pipeline_a.py`:
    keeping word-level timestamps for provenance.
 2. **`stage2_parsing.py`** — MinerU/Docling parse documents into structured
    layout JSON (text, figures, tables, equations).
-3. **`stage3_figures.py`** — the shared vision-language model (`BookModel`)
-   describes every figure *in the context of the surrounding document*, one
-   call per document rather than one call per image. Figure crops are kept on
-   disk; descriptions are inlined into the text as `[IMAGE fig_xyz]` markers.
+3. **`stage3_figures.py`** — the shared model (see
+   [Model provider](#model-provider)) describes every figure *in the context
+   of the surrounding document*, one call per document rather than one call
+   per image. Figure crops are kept on disk; descriptions are inlined into
+   the text as `[IMAGE fig_xyz]` markers.
 4. **`stage4_chunking.py`** — documents are consolidated into one corpus and
    split into ~1,500–2,000 token chunks, each carrying its source document,
    timestamp (if any), and figures.
@@ -99,6 +100,40 @@ generate a glossary and index, flag rough transitions between sections, sweep
 for contradicting claims, and report source coverage — then assembles
 `output/book/manuscript.md`.
 
+## Model provider
+
+Every LLM call in the system — Stage 3's figure description, all of Pipeline
+B, all five of Pipeline C's agents — goes through one interface,
+`LLMClient` (`src/llm/base.py`). No pipeline module ever imports a provider
+SDK directly; they all call `build_llm_client()` (`src/llm/factory.py`),
+which reads `LLM_PROVIDER` from `.env` and returns the matching
+implementation. Swapping the model behind the entire system is a one-line
+`.env` change, never a code change:
+
+| `LLM_PROVIDER` | What it calls | Needs |
+|---|---|---|
+| `local` (default) | A `transformers` checkpoint, loaded in-process | `torch`, `transformers`, a GPU |
+| `anthropic` | The Anthropic API | `ANTHROPIC_API_KEY` |
+| `openai` | The OpenAI API | `OPENAI_API_KEY` |
+| `groq` | Whatever model Groq hosts | `GROQ_API_KEY` |
+| `gemini` | Gemini, via its OpenAI-compatible endpoint | `GEMINI_API_KEY` |
+| `vllm` | A self-hosted vLLM server | `LLM_BASE_URL` |
+| `openai_compatible` | Anything else speaking that API shape (Ollama, LM Studio, TGI, ...) | `LLM_BASE_URL` |
+
+`anthropic` gets its own client (`providers/anthropic_client.py`) for its
+native Messages API shape; `openai`, `groq`, `gemini`, `vllm`, and
+`openai_compatible` all share one client (`providers/openai_compatible.py`)
+since they all speak the same `/chat/completions` shape — only the
+`base_url`, API key, and model id differ. See `.env.example` for every
+variable each provider reads.
+
+Speech-to-text (Whisper, Stage 1) is separate and always local — it isn't
+part of this abstraction.
+
+**Never commit or paste a real API key anywhere it could be logged** — a
+chat transcript, a terminal share, an issue. Treat any key that's been typed
+into one of those as compromised and rotate it.
+
 ## Configuration
 
 Configuration is layered:
@@ -109,8 +144,9 @@ Configuration is layered:
   code, or construct them with different values in the `run_pipeline_*.py`
   scripts.
 - **Per-machine / per-secret values** are environment variables, read from
-  `.env` (see `.env.example`): the model id, Whisper size, HF token, device
-  map, and the root paths for `data/`, `storage/`, and `output/`.
+  `.env` (see `.env.example`): which LLM provider and model, its API key (or
+  local HF token / device map), the Whisper size, and the root paths for
+  `data/`, `storage/`, and `output/`.
 
 ## Directory layout
 
@@ -132,15 +168,18 @@ can be large.
 
 ## Dependencies
 
-Core: `tqdm`, `tiktoken`, `python-dotenv`.
+Core: `tqdm`, `tiktoken`, `python-dotenv`, `Pillow`.
 
-Optional, per stage (each stage skips cleanly and logs a warning if its
-optional dependency is missing, rather than failing the whole run):
+Optional, per stage or provider (each skips cleanly and logs a warning if
+its dependency is missing, rather than failing the whole run):
 
 - `faster-whisper`, `ffmpeg` — Stage 1 (speech to text)
 - `raganything[all]` (MinerU / Docling) — Stage 2 (document parsing)
-- `torch`, `transformers`, `Pillow`, optionally `flash-attn` — Stage 3
-  onward (the shared vision-language model)
+- `torch`, `transformers`, optionally `flash-attn` — `LLM_PROVIDER=local`
+  only (Stage 3 onward)
+- `anthropic` — `LLM_PROVIDER=anthropic` only
+- `openai` — `LLM_PROVIDER=openai` / `groq` / `gemini` / `vllm` /
+  `openai_compatible` (one SDK, since they all speak the same API shape)
 - `chromadb`, `sentence-transformers` — Stage 5's source index, and Stage
   C's draft index and repetition detection
 
