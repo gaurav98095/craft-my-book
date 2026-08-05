@@ -1,0 +1,148 @@
+# Book Pipeline
+
+An agentic pipeline that turns raw source material — PDFs, slide decks, lecture
+recordings — into a full-length, written technical book. One shared model
+(a multimodal LLM) does everything except speech-to-text: describing figures,
+tagging concepts, planning chapters, writing prose, reviewing it, editing it,
+and cataloguing what it wrote.
+
+The system runs in three stages, each independently runnable and resumable:
+
+```
+raw sources  --[A: ingestion]-->  chunked corpus  --[B: toc]-->  toc.json  --[C: book_writer]-->  manuscript
+```
+
+| Stage | Package | Input | Output |
+|---|---|---|---|
+| **A — Ingestion** | `src/ingestion/` | `data/raw_sources/` (PDFs, slides, audio/video) | a chunked, provenance-tagged corpus in `data/` |
+| **B — Table of Contents** | `src/toc/` | Stage A's chunks | `storage/toc.json` (chapters, sections, word budgets) |
+| **C — Book Writer** | `src/book_writer/` | `storage/toc.json` | a written manuscript in `output/` |
+
+## Quickstart
+
+```bash
+pip install -r requirements.txt   # see "Dependencies" below
+cp .env.example .env              # fill in HF_TOKEN if your model needs one
+
+# drop PDFs / slides / audio / video into data/raw_sources/, then:
+python -m src.run_pipeline_a      # ingest sources -> chunked corpus
+python -m src.run_pipeline_b      # corpus -> storage/toc.json
+python -m src.run_pipeline_c      # toc.json -> output/book/manuscript.md
+```
+
+Each script is safe to re-run: every stage checkpoints its progress and skips
+work that is already done. `run_pipeline_c.py` starts with `RUN_LIMIT = 1` —
+read the first section it writes and the ledger diff it produced before
+raising the limit (or setting it to `None`) and letting the full run go
+unattended.
+
+## Architecture
+
+### Stage A — Ingestion (`src/ingestion/`)
+
+Five sub-stages, each in its own module, run in order by `run_pipeline_a.py`:
+
+1. **`stage1_speech.py`** — Whisper (`faster-whisper`) transcribes audio/video,
+   keeping word-level timestamps for provenance.
+2. **`stage2_parsing.py`** — MinerU/Docling parse documents into structured
+   layout JSON (text, figures, tables, equations).
+3. **`stage3_figures.py`** — the shared vision-language model (`BookModel`)
+   describes every figure *in the context of the surrounding document*, one
+   call per document rather than one call per image. Figure crops are kept on
+   disk; descriptions are inlined into the text as `[IMAGE fig_xyz]` markers.
+4. **`stage4_chunking.py`** — documents are consolidated into one corpus and
+   split into ~1,500–2,000 token chunks, each carrying its source document,
+   timestamp (if any), and figures.
+5. **`stage5_source_index.py`** — chunks are embedded into a Chroma
+   collection for semantic retrieval in Stage C.
+
+### Stage B — Table of Contents (`src/toc/`)
+
+Turns the chunk corpus into a curriculum, in eight steps (`toc/run.py`):
+load chunks → extract fine-grained concept tags and their relationships →
+normalize tags into a canonical vocabulary → discover chapter-level themes →
+assign tags to chapters → form sections within each chapter → order chapters
+and sections pedagogically → assemble `storage/toc.json` with a word budget
+per section.
+
+### Stage C — Book Writer (`src/book_writer/`)
+
+A multi-agent write loop (`BookOrchestrator` in `orchestrator.py`) over seven
+memory layers, run once per section:
+
+- **L0 Constitution** (`constitution.py`) — fixed style guide and running
+  examples, injected into every prompt.
+- **L1 Book Ledger** (`ledger.py`) — what the book has defined, claimed,
+  promised, and used so far; seeded from Stage B's tag vocabulary.
+- **L2 Draft Store** (`draft_store.py`) — finished sections, on disk and in a
+  vector index.
+- **L3 Source Memory** (`source_memory.py`) — read-only access to Stage A's
+  chunks and figures.
+- **L4 Context Assembler** (`context_assembler.py`) — turns L0–L3 into one
+  token-budgeted prompt per section.
+- **L5/L6 Classroom & Conversation Memory** (`memory.py`) — per-section
+  working state, discarded once the section ships.
+
+Five agents (`agents/`) share the one model: **Writer** plans and drafts,
+**Reviewer** approves the plan before prose is written, **Student** reads the
+prose as a first-time reader and raises doubts, **Editor** smooths the raw
+steps into one section (code blocks are masked so it can never touch them),
+**Archivist** reads the finished section and writes back into the ledger. A
+**Continuity Gate** (5 deterministic checks, no LLM call) and an **Edit
+Guard** (verifies the Editor didn't drop content) run alongside.
+
+After the last section, `finishing.py` runs five passes: resolve promises,
+generate a glossary and index, flag rough transitions between sections, sweep
+for contradicting claims, and report source coverage — then assembles
+`output/book/manuscript.md`.
+
+## Configuration
+
+Configuration is layered:
+
+- **Per-run knobs** (target book length, generation temperature, retry
+  limits, ...) are Python dataclasses in each package's `setup.py`
+  (`Stage1Config`, `PipelineBConfig`, `WriterConfig`, ...) — edit these in
+  code, or construct them with different values in the `run_pipeline_*.py`
+  scripts.
+- **Per-machine / per-secret values** are environment variables, read from
+  `.env` (see `.env.example`): the model id, Whisper size, HF token, device
+  map, and the root paths for `data/`, `storage/`, and `output/`.
+
+## Directory layout
+
+```
+data/                  Stage A's working tree (raw sources in, corpus out)
+  raw_sources/            drop PDFs / slides / audio / video here
+  transcripts/, parsed/, converted/, figures/, chunks/, source_index/
+storage/               shared between Stages B and C
+  toc.json                Stage B's output
+  book_ledger.json        Stage C's Layer 1, updated after every section
+  schemas/constitution.json
+output/                Stage C's output
+  sections/                one markdown file per section
+  book/                    manuscript.md, glossary.md, index.md, completeness_report.md
+```
+
+`data/`, `storage/`, and `output/` are gitignored — they're generated, and
+can be large.
+
+## Dependencies
+
+Core: `tqdm`, `tiktoken`, `python-dotenv`.
+
+Optional, per stage (each stage skips cleanly and logs a warning if its
+optional dependency is missing, rather than failing the whole run):
+
+- `faster-whisper`, `ffmpeg` — Stage 1 (speech to text)
+- `raganything[all]` (MinerU / Docling) — Stage 2 (document parsing)
+- `torch`, `transformers`, `Pillow`, optionally `flash-attn` — Stage 3
+  onward (the shared vision-language model)
+- `chromadb`, `sentence-transformers` — Stage 5's source index, and Stage
+  C's draft index and repetition detection
+
+## Notebook
+
+The original design and implementation notebook, `BookWriterProject.ipynb`,
+is kept for reference. `src/` is the maintained, importable version of the
+same system.
