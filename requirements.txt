@@ -1,0 +1,24 @@
+# Core — required by every stage
+tqdm
+tiktoken
+python-dotenv
+
+# Stage 1 — speech to text (skipped, with a warning, if absent)
+faster-whisper
+# also requires the ffmpeg binary on PATH
+
+# Stage 2 — document layout parsing (skipped, with a warning, if absent)
+raganything[all]
+
+# Stage 3 onward — the shared vision-language model (required from Stage 3 on)
+torch
+transformers>=4.57.0
+accelerate
+Pillow
+# flash-attn is optional; Stage 3 falls back to sdpa, then eager, if absent
+# flash-attn --no-build-isolation
+
+# Stage 5's source index, and Stage C's draft index / repetition detection
+# (skipped, with a warning, if absent)
+chromadb
+sentence-transformers
