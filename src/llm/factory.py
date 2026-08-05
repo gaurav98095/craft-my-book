@@ -11,6 +11,18 @@ import os
 
 from .base import LLMClient
 
+try:
+    from dotenv import load_dotenv
+    load_dotenv()          # reads .env in the cwd (or a parent dir) if present
+except ImportError:
+    pass                    # python-dotenv is optional; real env vars still work
+
+# `src.ingestion.setup` also calls `load_dotenv()`, so in the actual
+# pipeline scripts this is redundant (python-dotenv's load_dotenv is a
+# no-op the second time). It is not redundant here: `src.llm` is meant to
+# be usable on its own, and without this, whether `.env` had already been
+# read depended entirely on import order elsewhere in the process.
+
 # The local provider's default checkpoint and its step-down ladder. If this
 # machine cannot pull LLM_MODEL, it tries these next, in order -- but the
 # model actually loaded is printed by every stage report, so a downgrade is

@@ -243,10 +243,16 @@ class LLMClient(ABC):
                     return obj
                 reason = f"missing required key(s): {missing}"
 
+            _log.warning(
+                f"  [{self.model_id}] structured attempt {attempt}/{max_attempts}: "
+                f"{reason} — raw reply: {raw[:300]!r}")
             self.structured_repairs += 1
             repair_note = reason
 
         self.structured_failures += 1
+        _log.error(
+            f"  [{self.model_id}] structured generation failed after "
+            f"{max_attempts} attempts")
         return None
 
     # ------------------------------------------------------------- teardown --
