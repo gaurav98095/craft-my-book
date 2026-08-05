@@ -143,6 +143,6 @@ optional dependency is missing, rather than failing the whole run):
 
 ## Notebook
 
-The original design and implementation notebook, `BookWriterProject.ipynb`,
-is kept for reference. `src/` is the maintained, importable version of the
-same system.
+The original design and implementation notebook,
+`notebook/BookWriterProject.ipynb`, is kept for reference. `src/` is the
+maintained, importable version of the same system.
