@@ -370,7 +370,7 @@ Return every id you were given, exactly once."""
         )
 
         reply = self.llm.generate_structured(
-            self.system_prompt, user, ORDER_SCHEMA, max_tokens=1_500, temperature=0.2,
+            self.system_prompt, user, ORDER_SCHEMA, max_tokens=4_000, temperature=0.2,
             max_attempts=self.cfg.structured_max_attempts,
         )
 

@@ -34,12 +34,16 @@ class Stage3Config:
     describe_whole_document: bool = True
     max_figures_per_call: int = 8  # images per call; lower this if VRAM is tight
     max_document_chars: int = 60_000  # how much marker text travels with each call
-    document_call_max_tokens: int = 3_000  # the structured reply can be long
+    # A reasoning-capable model spends part of this SAME budget on hidden
+    # thinking before it writes a visible token -- see the identical note in
+    # toc/setup.py. Sized with that margin; a non-reasoning model just stops
+    # sooner and never touches the ceiling.
+    document_call_max_tokens: int = 8_000  # the structured reply can be long
 
     # -- Per-figure fallback (used when a document-level id comes back empty) -
     context_window_items: int = 6  # text items either side of the figure
     context_max_chars: int = 2_000
-    figure_max_tokens: int = 400
+    figure_max_tokens: int = 2_000
     temperature: float = 0.2  # descriptions should be boring and stable
 
     # -- Structured output ---------------------------------------------------

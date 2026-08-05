@@ -375,7 +375,8 @@ class BookOrchestrator:
                 f"Write ONE paragraph (60-80 words) summarising what this chapter built "
                 f"and what the reader can do at the end of it. Prose only.",
                 "You are the Archivist. You summarise finished chapters factually.",
-                max_tokens=250,
+                # See the reasoning-budget note in book_writer/setup.py.
+                max_tokens=1_500,
             )
             if rollup:
                 self.memory.ledger.add_chapter_rollup(chapter_id, rollup.strip())

@@ -79,7 +79,13 @@ class PipelineBConfig:
     min_tags_per_chunk: int = 10  # these are now actually USED in the prompt
     max_tags_per_chunk: int = 20
     max_relationships_per_chunk: int = 8
-    max_tokens_extraction: int = 1_400
+    # A reasoning-capable model (Gemini 3.x, o-series, ...) spends part of
+    # this SAME budget on hidden thinking before it writes a visible token,
+    # so a budget sized only for the visible JSON truncates the reply before
+    # it starts -- every attempt, since retrying does not change the budget.
+    # Set generously; it is a ceiling; a non-reasoning model simply stops
+    # sooner and never touches it.
+    max_tokens_extraction: int = 6_000
 
     # Generation is sequential, so extraction over a few thousand chunks is the
     # long pole of the whole pipeline. Save partial results this often, so a
@@ -88,12 +94,12 @@ class PipelineBConfig:
 
     # -- Normalization -------------------------------------------------------
     normalization_batch_size: int = 100
-    max_tokens_normalization: int = 2_400
+    max_tokens_normalization: int = 6_000
 
     # -- Clustering ----------------------------------------------------------
     theme_sample_size: int = 200
     assignment_batch_size: int = 60
-    max_tokens_structure: int = 3_000
+    max_tokens_structure: int = 6_000
 
     # -- Chunk mapping -------------------------------------------------------
     # The design's example section carries THREE chunk ids. Taking every chunk

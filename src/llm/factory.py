@@ -126,6 +126,7 @@ def build_llm_client(logger=None) -> LLMClient:
         return OpenAICompatibleClient(
             model_id=model_id, api_key=api_key, base_url=base_url,
             max_image_side=max_image_side,
+            reasoning_effort=os.getenv("LLM_REASONING_EFFORT") or None,
         )
 
     raise ValueError(

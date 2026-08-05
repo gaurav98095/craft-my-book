@@ -124,7 +124,11 @@ def parse_document_with_llm(
                 {"type": "image", "image": page_image},
             ],
             schema=PAGE_SCHEMA,
-            max_tokens=4_000,
+            # See the reasoning-budget note in toc/setup.py -- a whole page of
+            # blocks plus bounding boxes is verbose, and a reasoning-capable
+            # model spends part of this same budget thinking before any of
+            # it becomes visible.
+            max_tokens=8_000,
             temperature=0.0,
         )
         blocks = (reply or {}).get("blocks", [])

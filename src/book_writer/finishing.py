@@ -164,7 +164,8 @@ def contradiction_sweep(ledger: BookLedger, llm: LLMClient, max_pairs: int = 40)
                     f"A ({a['section_id']}): {a['text']}\nB ({b['section_id']}): {b['text']}\n\n"
                     f"Do these contradict?",
                     CONTRADICTION_SCHEMA,
-                    max_tokens=250,
+                    # See the reasoning-budget note in book_writer/setup.py.
+                    max_tokens=1_500,
                 )
                 if verdict and verdict.get("conflict"):
                     conflicts.append(

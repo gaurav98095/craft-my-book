@@ -48,6 +48,31 @@ def _is_retryable_error(exc: Exception) -> bool:
     return "Timeout" in name or "Connection" in name
 
 
+def _retry_after_seconds(exc: Exception) -> Optional[float]:
+    """
+    Prefer the SERVER'S OWN guidance over our fixed backoff schedule -- a
+    generic exponential ladder is a guess; a 429 that says "retry in 51s" or
+    "retry in 4s" is not. Checked in order: the standard HTTP `Retry-After`
+    header (both the openai and anthropic SDKs expose the raw httpx
+    response), then a `retryDelay`-shaped field some providers (Gemini)
+    embed in the error body text instead.
+    """
+    response = getattr(exc, "response", None)
+    headers = getattr(response, "headers", None) if response is not None else None
+    if headers:
+        value = headers.get("retry-after")
+        if value:
+            try:
+                return float(value)
+            except ValueError:
+                pass
+
+    text = str(exc)
+    match = (re.search(r"retryDelay['\"]?\s*[:=]\s*['\"]?(\d+(?:\.\d+)?)s", text)
+             or re.search(r"retry in (\d+(?:\.\d+)?)s", text, re.IGNORECASE))
+    return float(match.group(1)) if match else None
+
+
 def extract_json_object(raw: str) -> Tuple[Optional[Any], Optional[str]]:
     """
     Pull the first balanced JSON object out of a model reply.
@@ -148,6 +173,13 @@ class LLMClient(ABC):
         # Overridable per machine without touching provider config.
         self.max_retries = int(os.getenv("LLM_RETRY_ATTEMPTS", "5"))
         self.retry_backoff_seconds = float(os.getenv("LLM_RETRY_BACKOFF_SECONDS", "2"))
+        # A provider's own suggested wait is honoured over our exponential
+        # schedule (see _retry_after_seconds) -- but a daily/monthly quota
+        # can suggest a wait far longer than any per-call retry should ever
+        # block for. Past this cap, give up with a clear message instead of
+        # hanging: that is a billing/plan problem, not a transient one, and
+        # no amount of waiting inside this process fixes it.
+        self.max_retry_wait_seconds = float(os.getenv("LLM_MAX_RETRY_WAIT_SECONDS", "120"))
 
     # ------------------------------------------------------- provider hook --
     @abstractmethod
@@ -171,10 +203,23 @@ class LLMClient(ABC):
                 last_exc = exc
                 if not _is_retryable_error(exc) or attempt == self.max_retries:
                     raise
-                delay = self.retry_backoff_seconds * (2 ** (attempt - 1))
+
+                suggested = _retry_after_seconds(exc)
+                if suggested is not None and suggested > self.max_retry_wait_seconds:
+                    _log.error(
+                        f"  [{self.model_id}] the provider asked to wait "
+                        f"{suggested:.0f}s before retrying -- longer than the "
+                        f"{self.max_retry_wait_seconds:.0f}s cap (LLM_MAX_RETRY_WAIT_SECONDS). "
+                        f"This usually means a daily/monthly quota, not a momentary "
+                        f"rate limit; giving up rather than blocking the run: {exc}")
+                    raise
+                delay = (suggested if suggested is not None
+                        else self.retry_backoff_seconds * (2 ** (attempt - 1)))
+
                 _log.warning(
                     f"  [{self.model_id}] transient error (attempt "
-                    f"{attempt}/{self.max_retries}), retrying in {delay:.0f}s: "
+                    f"{attempt}/{self.max_retries}), retrying in {delay:.0f}s"
+                    f"{' (provider-suggested)' if suggested is not None else ''}: "
                     f"{type(exc).__name__}: {exc}")
                 time.sleep(delay)
         raise last_exc  # pragma: no cover — loop always returns or raises above

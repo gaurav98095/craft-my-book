@@ -134,12 +134,16 @@ class WriterConfig:
     max_editor_retries: int = 1
 
     # -- generation ----------------------------------------------------------
-    plan_max_tokens: int = 1_200
-    step_max_tokens: int = 1_400
-    review_max_tokens: int = 700
-    student_max_tokens: int = 400
-    editor_max_tokens: int = 2_500
-    archivist_max_tokens: int = 1_800
+    # A reasoning-capable model spends part of this SAME budget on hidden
+    # thinking before it writes a visible token, so these are sized with
+    # that margin built in -- see the identical note in toc/setup.py. A
+    # non-reasoning model just stops sooner and never touches the ceiling.
+    plan_max_tokens: int = 4_000
+    step_max_tokens: int = 5_000
+    review_max_tokens: int = 3_000
+    student_max_tokens: int = 2_000
+    editor_max_tokens: int = 7_000
+    archivist_max_tokens: int = 5_000
     temperature_prose: float = 0.7  # writing wants some life
     temperature_structured: float = 0.0
 

@@ -128,7 +128,10 @@ def build_final_toc(
                 "You are an expert at creating book titles. Reply with the title only.",
                 f"Based on these chapter titles, give this book a concise, professional "
                 f"title:\n\n{titles}\n\nReply with just the title.",
-                max_tokens=40,
+                # The visible answer is a few words, but a reasoning-capable
+                # model spends part of this budget on hidden thinking first
+                # -- see the note in toc/setup.py. 40 tokens left it none.
+                max_tokens=1_000,
                 temperature=0.3,
             )
             .strip()

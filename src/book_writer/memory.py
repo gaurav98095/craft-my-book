@@ -213,7 +213,8 @@ class ConversationMemory:
                 "You compress teaching conversations into a fixed structure. "
                 "Return only the structured summary.",
                 prompt,
-                max_tokens=600,
+                # See the reasoning-budget note in book_writer/setup.py.
+                max_tokens=2_500,
                 temperature=0.0,
             )
             h["exchanges"] = h["exchanges"][-self.keep_recent :]
