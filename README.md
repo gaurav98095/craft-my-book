@@ -17,9 +17,11 @@ raw sources  --[A: ingestion]-->  chunked corpus  --[B: toc]-->  toc.json  --[C:
 
 | Stage | Package | Input | Output |
 |---|---|---|---|
-| **A — Ingestion** | `src/ingestion/` | `data/raw_sources/` (PDFs, slides, audio/video) | a chunked, provenance-tagged corpus in `data/` |
-| **B — Table of Contents** | `src/toc/` | Stage A's chunks | `storage/toc.json` (chapters, sections, word budgets) |
-| **C — Book Writer** | `src/book_writer/` | `storage/toc.json` | a written manuscript in `output/` |
+| **A — Ingestion** | `src/ingestion/` | `data/raw_sources/` (PDFs, slides, audio/video) | a chunked, provenance-tagged corpus in `runs/<run_id>/data/` |
+| **B — Table of Contents** | `src/toc/` | Stage A's chunks | `runs/<run_id>/storage/toc.json` (chapters, sections, word budgets) |
+| **C — Book Writer** | `src/book_writer/` | `runs/<run_id>/storage/toc.json` | a written manuscript in `runs/<run_id>/output/` |
+
+(`data/raw_sources/` is the one input path that stays fixed across runs — see [Runs](#runs).)
 
 ## Quickstart
 
@@ -28,16 +30,41 @@ pip install -r requirements.txt   # see "Dependencies" below
 cp .env.example .env              # defaults to local weights; see "Model provider" to use an API instead
 
 # drop PDFs / slides / audio / video into data/raw_sources/, then:
-python -m src.run_pipeline_a      # ingest sources -> chunked corpus
-python -m src.run_pipeline_b      # corpus -> storage/toc.json
-python -m src.run_pipeline_c      # toc.json -> output/book/manuscript.md
+python -m src.run_pipeline        # run A -> B -> C as one run
 ```
 
-Each script is safe to re-run: every stage checkpoints its progress and skips
-work that is already done. `run_pipeline_c.py` starts with `RUN_LIMIT = 1` —
-read the first section it writes and the ledger diff it produced before
-raising the limit (or setting it to `None`) and letting the full run go
-unattended.
+Or run a stage at a time: `python -m src.run_pipeline_a`, then `_b`, then
+`_c`. Each script is safe to re-run: every stage checkpoints its progress and
+skips work that is already done. `run_pipeline_c.py` starts with
+`RUN_LIMIT = 1` — read the first section it writes and the ledger diff it
+produced before raising the limit (or setting it to `None`) and letting the
+full run go unattended.
+
+### Runs
+
+Everything a run *generates* — chunks, `toc.json`, the ledger, written
+sections, and every stage's log file — is written under
+`runs/<run_id>/{data,storage,output,logs}/`, one run id per process (see
+`src/run_context.py`). Running `python -m src.run_pipeline` gives A, B, and C
+the same run id automatically; running a stage standalone gives it its own.
+
+The run id is auto-generated unless `RUN_ID` is already set in the
+environment. To resume a run that stopped partway through (Pipeline C
+checkpoints after every section), re-invoke with the same id:
+
+```bash
+RUN_ID=20260806_153000_ab12cd python -m src.run_pipeline_c
+```
+
+Two things are deliberately *not* run-scoped, because you author them rather
+than the pipeline generating them: `data/raw_sources/` (drop files in once,
+every run reads the same copy) and `storage/schemas/constitution.json` (hand
+-edited once, "edit it before a real run"). See `SOURCES_ROOT` /
+`CONSTITUTION_ROOT` in `.env.example`.
+
+In deployment, point `RUNS_ROOT` at an S3-mounted path (goofys, s3fs, an
+EFS/FSx mount) and every run's data/storage/output/logs lands directly in
+S3, keyed by run id.
 
 ## Architecture
 
@@ -72,8 +99,9 @@ Turns the chunk corpus into a curriculum, in eight steps (`toc/run.py`):
 load chunks → extract fine-grained concept tags and their relationships →
 normalize tags into a canonical vocabulary → discover chapter-level themes →
 assign tags to chapters → form sections within each chapter → order chapters
-and sections pedagogically → assemble `storage/toc.json` with a word budget
-per section.
+and sections pedagogically → assemble `storage/toc.json` (under the run's
+`storage/`, i.e. `runs/<run_id>/storage/toc.json`) with a word budget per
+section.
 
 ### Stage C — Book Writer (`src/book_writer/`)
 
@@ -104,7 +132,8 @@ Guard** (verifies the Editor didn't drop content) run alongside.
 After the last section, `finishing.py` runs five passes: resolve promises,
 generate a glossary and index, flag rough transitions between sections, sweep
 for contradicting claims, and report source coverage — then assembles
-`output/book/manuscript.md`.
+`output/book/manuscript.md` (under the run's `output/`, i.e.
+`runs/<run_id>/output/book/manuscript.md`).
 
 ## Model provider
 
@@ -151,26 +180,29 @@ Configuration is layered:
   scripts.
 - **Per-machine / per-secret values** are environment variables, read from
   `.env` (see `.env.example`): which LLM provider and model, its API key (or
-  local HF token / device map), the Whisper size, and the root paths for
-  `data/`, `storage/`, and `output/`.
+  local HF token / device map), the Whisper size, and `RUNS_ROOT` / `RUN_ID`
+  (see [Runs](#runs)).
 
 ## Directory layout
 
 ```
-data/                  Stage A's working tree (raw sources in, corpus out)
-  raw_sources/            drop PDFs / slides / audio / video here
-  transcripts/, parsed/, converted/, figures/, chunks/, source_index/
-storage/               shared between Stages B and C
-  toc.json                Stage B's output
-  book_ledger.json        Stage C's Layer 1, updated after every section
-  schemas/constitution.json
-output/                Stage C's output
-  sections/                one markdown file per section
-  book/                    manuscript.md, glossary.md, index.md, completeness_report.md
+runs/<run_id>/         everything the pipeline generates, one run id per process
+  data/                   Stage A's working tree (corpus out)
+    transcripts/, parsed/, converted/, figures/, chunks/, source_index/
+  storage/                shared between Stages B and C
+    toc.json                 Stage B's output
+    book_ledger.json         Stage C's Layer 1, updated after every section
+    checkpoints/
+  output/                 Stage C's output
+    sections/                 one markdown file per section
+    book/                     manuscript.md, glossary.md, index.md, completeness_report.md
+  logs/                   every stage's log file
+
+data/raw_sources/       NOT run-scoped -- drop PDFs / slides / audio / video here
+storage/schemas/        NOT run-scoped -- constitution.json, hand-edited
 ```
 
-`data/`, `storage/`, and `output/` are gitignored — they're generated, and
-can be large.
+`runs/` holds everything a run generates, and can grow large.
 
 ## Dependencies
 

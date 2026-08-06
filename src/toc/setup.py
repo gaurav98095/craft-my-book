@@ -10,6 +10,10 @@ which model answers its calls is decided once, for the whole system, by
 import logging
 from dataclasses import dataclass, field
 
+# Sets RUN_ID and forces DATA_ROOT / STORAGE_ROOT / OUTPUT_ROOT / LOGS_ROOT to
+# runs/<run_id>/... (a no-op if ingestion.setup already ran it this process).
+from ..run_context import LOGS_ROOT
+
 
 def make_toc_logger(name: str, logfile: str) -> logging.Logger:
     lg = logging.getLogger(name)
@@ -20,7 +24,7 @@ def make_toc_logger(name: str, logfile: str) -> logging.Logger:
         "%(asctime)s | %(name)s | %(levelname)-7s | %(message)s", datefmt="%H:%M:%S"
     )
     for handler in (
-        logging.FileHandler(logfile, encoding="utf-8"),
+        logging.FileHandler(LOGS_ROOT / logfile, encoding="utf-8"),
         logging.StreamHandler(),
     ):
         handler.setFormatter(fmt)

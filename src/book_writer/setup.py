@@ -26,24 +26,36 @@ import logging
 from pathlib import Path
 from dataclasses import dataclass, field
 
+# Sets RUN_ID and forces DATA_ROOT / STORAGE_ROOT / OUTPUT_ROOT / LOGS_ROOT to
+# runs/<run_id>/... (a no-op if another package's setup already ran it this
+# process). Must run before BOOK (below) is constructed. See run_context.py.
+from ..run_context import LOGS_ROOT
+
 
 @dataclass
 class BookPaths:
     """
     The design's `Files on Disk`, for the writing side.
 
-    `storage` defaults from STORAGE_ROOT (the same tree Pipeline B writes
-    toc.json into) and `output` from OUTPUT_ROOT, so the manuscript can be
-    written somewhere other than the repo without editing code.
+    `storage` defaults from STORAGE_ROOT and `output` from OUTPUT_ROOT, which
+    `run_context` points at the current run's folder (runs/<run_id>/...) so
+    every stage's output lands in one place per run.
+
+    `constitution_root` is deliberately NOT run-scoped: the constitution is
+    hand-edited once ("edit it before a real run"), not generated, so it
+    stays at a stable path (default ./storage/schemas) shared by every run.
     """
 
     storage: Path = field(default_factory=lambda: Path(os.getenv("STORAGE_ROOT", "./storage")))
     output: Path = field(default_factory=lambda: Path(os.getenv("OUTPUT_ROOT", "./output")))
+    constitution_root: Path = field(
+        default_factory=lambda: Path(os.getenv("CONSTITUTION_ROOT", "./storage/schemas"))
+    )
 
     # -- storage ------------------------------------------------------------
     @property
     def constitution(self) -> Path:
-        return self.storage / "schemas" / "constitution.json"
+        return self.constitution_root / "constitution.json"
 
     @property
     def toc(self) -> Path:
@@ -92,7 +104,7 @@ class BookPaths:
 
     def mkdirs(self) -> None:
         for p in (
-            self.storage / "schemas",
+            self.constitution_root,
             self.checkpoints,
             self.sections,
             self.raw_steps,
@@ -115,7 +127,7 @@ def make_writer_logger(name: str, logfile: str) -> logging.Logger:
     fmt = logging.Formatter(
         "%(asctime)s | %(name)s | %(levelname)-7s | %(message)s", datefmt="%H:%M:%S"
     )
-    for h in (logging.FileHandler(logfile, encoding="utf-8"), logging.StreamHandler()):
+    for h in (logging.FileHandler(LOGS_ROOT / logfile, encoding="utf-8"), logging.StreamHandler()):
         h.setFormatter(fmt)
         lg.addHandler(h)
     return lg

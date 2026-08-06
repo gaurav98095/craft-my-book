@@ -22,6 +22,11 @@ try:
 except ImportError:
     pass                    # python-dotenv is optional; real env vars still work
 
+# Sets RUN_ID and forces DATA_ROOT / STORAGE_ROOT / OUTPUT_ROOT / LOGS_ROOT to
+# runs/<run_id>/... before PipelinePaths (below) reads them. Must run before
+# PATHS is constructed at the bottom of this file. See run_context.py.
+from ..run_context import LOGS_ROOT
+
 
 # ---------------------------------------------------------------- paths -----
 @dataclass
@@ -29,16 +34,23 @@ class PipelinePaths:
     """
     The on-disk layout for Pipeline A, mirroring `Files on Disk` in the design doc.
 
-    `root` and `storage` default from DATA_ROOT / STORAGE_ROOT so the same
-    corpus tree can live somewhere other than the repo (a scratch disk, a
-    mounted volume) without editing code.
+    `root` and `storage` default from DATA_ROOT / STORAGE_ROOT, which
+    `run_context` points at the current run's folder (runs/<run_id>/...) so
+    every stage's output lands in one place per run.
+
+    `sources_root` is deliberately NOT run-scoped: raw sources are an input
+    you drop in once, not something the pipeline generates, so it stays at a
+    stable path (default ./data/raw_sources) shared by every run.
     """
 
     root: Path = field(default_factory=lambda: Path(os.getenv("DATA_ROOT", "./data")))
+    sources_root: Path = field(
+        default_factory=lambda: Path(os.getenv("SOURCES_ROOT", "./data/raw_sources"))
+    )
 
     @property
     def raw_sources(self) -> Path:  # what you drop in: PDFs, slides, lectures
-        return self.root / "raw_sources"
+        return self.sources_root
 
     @property
     def transcripts(self) -> Path:  # Stage 1: Whisper output, timestamps kept
@@ -109,7 +121,7 @@ class PipelinePaths:
 
     def mkdirs(self) -> None:
         for p in (
-            self.raw_sources,
+            self.sources_root,
             self.transcripts,
             self.parsed,
             self.converted,
@@ -128,7 +140,8 @@ PATHS.mkdirs()
 # -------------------------------------------------------------- logging -----
 def make_logger(name: str, logfile: str) -> logging.Logger:
     """
-    One logger per stage, each with its own file.
+    One logger per stage, each with its own file under the current run's
+    logs/ folder (runs/<run_id>/logs/<logfile>) -- see run_context.py.
 
     Jupyter re-runs cells, and `logging.basicConfig` is a no-op the second time
     it is called — which is why per-stage log files can quietly all go to
@@ -144,7 +157,7 @@ def make_logger(name: str, logfile: str) -> logging.Logger:
         "%(asctime)s | %(name)s | %(levelname)-7s | %(message)s", datefmt="%H:%M:%S"
     )
 
-    fh = logging.FileHandler(logfile, encoding="utf-8")
+    fh = logging.FileHandler(LOGS_ROOT / logfile, encoding="utf-8")
     fh.setFormatter(fmt)
     lg.addHandler(fh)
 
