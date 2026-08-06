@@ -1,0 +1,416 @@
+{
+  "ordered_chapters": [
+    {
+      "id": "theme-1",
+      "title": "Attention Representations and Information Flow",
+      "description": "Introduces the query, key, and value representations used to route information through hidden states.",
+      "difficulty_level": "foundational",
+      "tags": [
+        "query vector",
+        "key vector",
+        "value vector"
+      ],
+      "sections": [
+        {
+          "title": "Query Vector",
+          "tags": [
+            "query vector"
+          ],
+          "id": "theme-1_s01"
+        },
+        {
+          "title": "Key Vector",
+          "tags": [
+            "key vector"
+          ],
+          "id": "theme-1_s02"
+        },
+        {
+          "title": "Value Vector",
+          "tags": [
+            "value vector"
+          ],
+          "id": "theme-1_s03"
+        }
+      ]
+    },
+    {
+      "id": "theme-2",
+      "title": "Scaled Dot-Product Attention",
+      "description": "Explains how token similarities become normalized attention weights and how those weights aggregate value representations.",
+      "difficulty_level": "foundational",
+      "tags": [
+        "scaled dot-product attention",
+        "key-dimension scaling",
+        "softmax attention weights",
+        "weighted value aggregation"
+      ],
+      "sections": [
+        {
+          "title": "Why Key Dimensions Affect Score Magnitude",
+          "tags": [
+            "key-dimension scaling"
+          ],
+          "id": "theme-2_s01"
+        },
+        {
+          "title": "The Complete Scaled Dot-Product Attention Operation",
+          "tags": [
+            "scaled dot-product attention"
+          ],
+          "id": "theme-2_s02"
+        },
+        {
+          "title": "Producing Softmax Attention Weights",
+          "tags": [
+            "softmax attention weights"
+          ],
+          "id": "theme-2_s03"
+        },
+        {
+          "title": "Combining Contributions into an Attention Output",
+          "tags": [
+            "weighted value aggregation"
+          ],
+          "id": "theme-2_s04"
+        }
+      ]
+    },
+    {
+      "id": "theme-3",
+      "title": "Multi-Head Attention Architecture",
+      "description": "Covers parallel attention heads and the learned projections and recombination steps that form multi-head attention.",
+      "difficulty_level": "intermediate",
+      "tags": [
+        "attention head",
+        "multi-head attention",
+        "learned q/k/v projections",
+        "head concatenation",
+        "attention output projection"
+      ],
+      "sections": [
+        {
+          "title": "The Role of an Attention Head",
+          "tags": [
+            "attention head"
+          ],
+          "id": "theme-3_s01"
+        },
+        {
+          "title": "Query, Key, and Value Representations",
+          "tags": [
+            "learned q/k/v projections"
+          ],
+          "id": "theme-3_s02"
+        },
+        {
+          "title": "Why Multiple Attention Heads Are Useful",
+          "tags": [
+            "multi-head attention"
+          ],
+          "id": "theme-3_s03"
+        },
+        {
+          "title": "Concatenating Parallel Head Results",
+          "tags": [
+            "head concatenation"
+          ],
+          "id": "theme-3_s04"
+        },
+        {
+          "title": "The Attention Output Projection",
+          "tags": [
+            "attention output projection"
+          ],
+          "id": "theme-3_s05"
+        }
+      ]
+    },
+    {
+      "id": "theme-4",
+      "title": "Positional Representation",
+      "description": "Addresses the permutation invariance of attention and methods for encoding token order and relative position.",
+      "difficulty_level": "intermediate",
+      "tags": [
+        "permutation invariance",
+        "sinusoidal positional encoding",
+        "learned positional embedding",
+        "rotary position embedding"
+      ],
+      "sections": [
+        {
+          "title": "Permutation Invariance in Self-Attention",
+          "tags": [
+            "permutation invariance"
+          ],
+          "id": "theme-4_s01"
+        },
+        {
+          "title": "Sinusoidal Positional Encoding",
+          "tags": [
+            "sinusoidal positional encoding"
+          ],
+          "id": "theme-4_s02"
+        },
+        {
+          "title": "Learned Absolute Position Tables",
+          "tags": [
+            "learned positional embedding"
+          ],
+          "id": "theme-4_s03"
+        },
+        {
+          "title": "Rotating Attention Representations",
+          "tags": [
+            "rotary position embedding"
+          ],
+          "id": "theme-4_s04"
+        }
+      ]
+    },
+    {
+      "id": "theme-5",
+      "title": "Efficient Autoregressive Inference",
+      "description": "Explains key-value caching and its memory implications during sequential generation.",
+      "difficulty_level": "advanced",
+      "tags": [
+        "kv cache",
+        "linear kv-cache memory growth"
+      ],
+      "sections": [
+        {
+          "title": "Storing Prior Attention States",
+          "tags": [
+            "kv cache"
+          ],
+          "id": "theme-5_s01"
+        },
+        {
+          "title": "Linear Memory Scaling with Generated Tokens",
+          "tags": [
+            "linear kv-cache memory growth"
+          ],
+          "id": "theme-5_s02"
+        }
+      ]
+    },
+    {
+      "id": "theme-6",
+      "title": "Retrieval-Augmented Generation Motivation",
+      "description": "Frames retrieval augmentation as a response to hidden-state and parametric-knowledge limitations, including stale knowledge and finite context windows.",
+      "difficulty_level": "intermediate",
+      "tags": [
+        "hidden-state bottleneck",
+        "retrieval-augmented generation",
+        "frozen training-time knowledge",
+        "context-window limitation",
+        "external corpus retrieval"
+      ],
+      "sections": [
+        {
+          "title": "The Limits of Internal Model Representations",
+          "tags": [
+            "hidden-state bottleneck"
+          ],
+          "id": "theme-6_s01"
+        },
+        {
+          "title": "Knowledge Bound to the Training Data",
+          "tags": [
+            "frozen training-time knowledge"
+          ],
+          "id": "theme-6_s02"
+        },
+        {
+          "title": "Finite Input Capacity as a Design Constraint",
+          "tags": [
+            "context-window limitation"
+          ],
+          "id": "theme-6_s03"
+        },
+        {
+          "title": "Retrieving Evidence at Inference Time",
+          "tags": [
+            "external corpus retrieval"
+          ],
+          "id": "theme-6_s04"
+        },
+        {
+          "title": "Retrieval-Augmented Generation as the Motivated Solution",
+          "tags": [
+            "retrieval-augmented generation"
+          ],
+          "id": "theme-6_s05"
+        }
+      ]
+    },
+    {
+      "id": "theme-7",
+      "title": "Document Preparation and Chunking",
+      "description": "Covers how source documents are segmented into retrieval units using size and structural boundary decisions.",
+      "difficulty_level": "intermediate",
+      "tags": [
+        "document chunking",
+        "structure-aware chunk boundaries",
+        "1,500–2,000-token chunk target",
+        "zero chunk overlap"
+      ],
+      "sections": [
+        {
+          "title": "Document Chunking Fundamentals",
+          "tags": [
+            "document chunking"
+          ],
+          "id": "theme-7_s01"
+        },
+        {
+          "title": "Structure-Aware Chunk Boundaries",
+          "tags": [
+            "structure-aware chunk boundaries"
+          ],
+          "id": "theme-7_s02"
+        },
+        {
+          "title": "The 1,500–2,000-Token Chunk Target",
+          "tags": [
+            "1,500–2,000-token chunk target"
+          ],
+          "id": "theme-7_s03"
+        },
+        {
+          "title": "Zero Chunk Overlap",
+          "tags": [
+            "zero chunk overlap"
+          ],
+          "id": "theme-7_s04"
+        }
+      ]
+    },
+    {
+      "id": "theme-8",
+      "title": "Embeddings and Vector Indexing",
+      "description": "Introduces semantic representations and scalable storage and search structures for document chunks.",
+      "difficulty_level": "intermediate",
+      "tags": [
+        "embedding model",
+        "dense vector embedding",
+        "vector database",
+        "approximate nearest-neighbor search"
+      ],
+      "sections": [
+        {
+          "title": "Choosing an Embedding Model",
+          "tags": [
+            "embedding model"
+          ],
+          "id": "theme-8_s02"
+        },
+        {
+          "title": "Semantic Representation of Document Chunks",
+          "tags": [
+            "dense vector embedding"
+          ],
+          "id": "theme-8_s01"
+        },
+        {
+          "title": "Storage Requirements for Vector Data",
+          "tags": [
+            "vector database"
+          ],
+          "id": "theme-8_s03"
+        },
+        {
+          "title": "Approximate Nearest-Neighbor Search",
+          "tags": [
+            "approximate nearest-neighbor search"
+          ],
+          "id": "theme-8_s04"
+        }
+      ]
+    },
+    {
+      "id": "theme-9",
+      "title": "Candidate Retrieval and Reranking",
+      "description": "Explains the retrieval pipeline from similarity-based candidate generation through precision-oriented reranking and relevance scoring.",
+      "difficulty_level": "advanced",
+      "tags": [
+        "top-k candidate retrieval",
+        "semantic similarity retrieval",
+        "reranking",
+        "cross-encoder reranker",
+        "answer-relevance scoring"
+      ],
+      "sections": [
+        {
+          "title": "Semantic Similarity Retrieval",
+          "tags": [
+            "semantic similarity retrieval"
+          ],
+          "id": "theme-9_s01"
+        },
+        {
+          "title": "Selecting the Initial Candidate Pool",
+          "tags": [
+            "top-k candidate retrieval"
+          ],
+          "id": "theme-9_s02"
+        },
+        {
+          "title": "The Purpose of Reranking",
+          "tags": [
+            "reranking"
+          ],
+          "id": "theme-9_s03"
+        },
+        {
+          "title": "Cross-Encoder Reranker Architecture",
+          "tags": [
+            "cross-encoder reranker"
+          ],
+          "id": "theme-9_s04"
+        },
+        {
+          "title": "Answer-Relevance Scoring",
+          "tags": [
+            "answer-relevance scoring"
+          ],
+          "id": "theme-9_s05"
+        }
+      ]
+    },
+    {
+      "id": "theme-10",
+      "title": "Retrieval Provenance and Source Metadata",
+      "description": "Covers metadata needed to identify, evaluate, filter, and cite retrieved evidence.",
+      "difficulty_level": "advanced",
+      "tags": [
+        "provenance metadata",
+        "source-type metadata",
+        "recording timestamp metadata"
+      ],
+      "sections": [
+        {
+          "title": "Core Provenance Metadata",
+          "tags": [
+            "provenance metadata"
+          ],
+          "id": "theme-10_s01"
+        },
+        {
+          "title": "Recording When Evidence Was Retrieved",
+          "tags": [
+            "recording timestamp metadata"
+          ],
+          "id": "theme-10_s02"
+        },
+        {
+          "title": "Classifying Retrieved Sources",
+          "tags": [
+            "source-type metadata"
+          ],
+          "id": "theme-10_s03"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+22:58:19 | pipelineC.writer | INFO    | Pipeline C model: gpt-5.6-luna
+22:58:19 | pipelineC.writer | INFO    | Constitution written to storage/schemas/constitution.json (edit it before a real run)
+22:58:19 | pipelineC.writer | INFO    | Layer 2: draft index at runs/20260806_225508_c2db77/output/draft_index
+22:58:19 | pipelineC.writer | INFO    | Layer 3: 2 chunks, source index ON
+22:58:19 | pipelineC.writer | INFO    | ======================================================================
+22:58:19 | pipelineC.writer | INFO    | WRITING: "Attention and Retrieval: Foundations of Modern Language Models" — 39 sections to go
+22:58:19 | pipelineC.writer | INFO    | ======================================================================
+22:58:19 | pipelineC.writer | INFO    | [sec_01_01] Query Vector  (target 900 words)
+22:58:33 | pipelineC.writer | INFO    |   [sec_01_01] plan approved on attempt 1 (4 steps)
+22:59:10 | pipelineC.writer | WARNING |   [sec_01_01] edit guard: ["concept 'Why attention needs a per-token representation of what that token is looking for' present in draft, absent after edit", "concept 'What a query vector represents' present in draft, absent after edit", "concept 'How a query vector participates in comparisons with keys' present in draft, absent after edit", "concept 'Why the query vector is distinct from the value vector' present in draft, absent after edit", "concept 'How the query-key dot product becomes an attention score' present in draft, absent after edit", "concept 'Why the score is scaled by the square root of the key dimension' present in draft, absent after edit"]
+22:59:21 | pipelineC.writer | WARNING |   [sec_01_01] edit guard: ["concept 'Why attention needs a per-token representation of what that token is looking for' present in draft, absent after edit", "concept 'What a query vector represents' present in draft, absent after edit", "concept 'How a query vector participates in comparisons with keys' present in draft, absent after edit", "concept 'Why the query vector is distinct from the value vector' present in draft, absent after edit", "concept 'How the query-key dot product becomes an attention score' present in draft, absent after edit", "concept 'Why the score is scaled by the square root of the key dimension' present in draft, absent after edit"]
+22:59:21 | pipelineC.writer | WARNING |   [sec_01_01] editor failed twice — shipping the raw draft
+22:59:38 | pipelineC.writer | INFO    |   [sec_01_01] done: 1039 words in 1.3 min (ledger v1)
+22:59:38 | pipelineC.writer | INFO    | ======================================================================
+22:59:38 | pipelineC.writer | INFO    | FINISHING PASSES
+22:59:38 | pipelineC.writer | INFO    | ======================================================================
+22:59:38 | pipelineC.writer | INFO    | Pass 1: promise resolution
+22:59:38 | pipelineC.writer | INFO    | Pass 2: glossary and index
+22:59:38 | pipelineC.writer | INFO    | Pass 3: transitions
+22:59:38 | pipelineC.writer | INFO    | Pass 4: contradiction sweep
+22:59:38 | pipelineC.writer | INFO    | Pass 5: coverage

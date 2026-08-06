@@ -1,0 +1,27 @@
+{
+  "status": "success",
+  "file_path": "data/raw_sources/attention_mechanisms.md",
+  "filename": "attention_mechanisms.md",
+  "doc_slug": "attention_mechanisms_56e85c",
+  "source_type": "text",
+  "parse_dir": "runs/20260806_225508_c2db77/data/parsed/attention_mechanisms_56e85c",
+  "content_list": [
+    {
+      "type": "text",
+      "text": "# Lecture 3 -- Attention Mechanisms\n\n## Why attention\n\nRecurrent networks read a sequence one token at a time and compress everything\nthey've seen into a single hidden state. That hidden state is a bottleneck:\nby the time an RNN reaches token 200, whatever it learned about token 3 has\nusually been overwritten many times over. Attention removes the bottleneck by\nletting every output position look directly at every input position, and\ndecide for itself how much each one matters.\n\n## Self-attention, mechanically\n\nGiven a sequence of token embeddings, self-attention computes three vectors\nper token: a **query**, a **key**, and a **value**. The query is \"what this\ntoken is looking for\"; the key is \"what this token has to offer\"; the value\nis \"what this token actually contributes if selected.\"\n\nFor each token, the attention score against every other token is the dot\nproduct of its query with that token's key, scaled by the square root of the\nkey dimension:\n\n```\nscore(i, j) = (Q_i · K_j) / sqrt(d_k)\n```\n\nThose scores are passed through a softmax so they sum to 1, and the token's\nnew representation is the weighted sum of every value vector, weighted by\nthat softmax distribution. A token that is highly relevant to the query gets\na large weight; an irrelevant one gets pushed toward zero.\n\n## Multi-head attention\n\nA single attention computation learns one notion of \"relevant.\" Multi-head\nattention runs several of these in parallel, each with its own learned Q/K/V\nprojections, then concatenates the results and projects back down. In\npractice one head often specializes in short-range syntactic relationships\n(a verb attending to its subject) while another specializes in long-range\ncoreference (a pronoun attending to the noun it refers to), though nothing in\nthe architecture forces this division -- it emerges from training.\n\n## Positional encoding\n\nAttention itself is permutation-invariant: shuffle the input tokens and the\nattention scores between any two specific tokens don't change. That's a\nproblem for language, where order carries meaning (\"dog bites man\" is not\n\"man bites dog\"). Positional encoding injects order back in, either as a\nfixed sinusoidal pattern added to each token's embedding, or as a learned\nembedding per position. Rotary position embeddings (RoPE), used in most\ncurrent large language models, take a third approach: they rotate the query\nand key vectors by an angle proportional to position, so the dot product\nbetween two tokens naturally encodes their relative distance.\n\n## The KV cache\n\nAt inference time, generating one token at a time, recomputing every key and\nvalue vector for the whole sequence at every step would be wasteful -- the\nkeys and values for tokens already generated never change. The KV cache\nstores them once and reuses them, so each new token only requires computing\nits own query, key, and value, then attending over the cached keys and\nvalues of everything before it. This is why long-context generation is\nmemory-bound rather than compute-bound: the KV cache grows linearly with\nsequence length, and at long enough contexts it dominates GPU memory.\n\n## What this sets up\n\nEverything above describes one transformer block's attention sub-layer. The\nnext lecture covers what surrounds it: the feed-forward sub-layer, residual\nconnections, and layer normalization -- and why removing any one of those\nthree makes deep transformers stop training."
+    }
+  ],
+  "metadata": {
+    "total_items": 1,
+    "content_types": {
+      "text": 1
+    },
+    "images_resolved": 0,
+    "images_missing": 0,
+    "parse_time": 0.0,
+    "parse_method": "auto",
+    "parser_type": "llm",
+    "parsed_at": "2026-08-06T22:55:08",
+    "file_size": 3420
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "chunk_0001": {
+    "source_document": "attention_mechanisms.md",
+    "source_type": "text",
+    "timestamp": null,
+    "tags": [],
+    "figures": [],
+    "doc_slug": "attention_mechanisms_56e85c",
+    "char_span": [
+      211,
+      3625
+    ],
+    "token_count": 721,
+    "index_in_document": 0
+  },
+  "chunk_0002": {
+    "source_document": "retrieval_augmented_generation.md",
+    "source_type": "text",
+    "timestamp": null,
+    "tags": [],
+    "figures": [],
+    "doc_slug": "retrieval_augmented_generation_510f8d",
+    "char_span": [
+      3849,
+      7365
+    ],
+    "token_count": 755,
+    "index_in_document": 0
+  }
+}

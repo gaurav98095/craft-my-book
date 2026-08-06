@@ -1,0 +1,5 @@
+22:55:08 | stage1.speech | INFO    | ======================================================================
+22:55:08 | stage1.speech | INFO    | STAGE 1: SPEECH TO TEXT
+22:55:08 | stage1.speech | INFO    | ======================================================================
+22:55:08 | stage1.speech | INFO    | No audio or video files found - nothing to do.
+22:55:08 | stage1.speech | INFO    | (This is fine. Stage 1 only runs if your corpus has recordings.)

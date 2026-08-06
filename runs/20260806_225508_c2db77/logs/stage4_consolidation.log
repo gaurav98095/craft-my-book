@@ -1,0 +1,15 @@
+22:55:18 | stage4.consolidate | INFO    | ======================================================================
+22:55:18 | stage4.consolidate | INFO    | STAGE 4: CONSOLIDATION AND CHUNKING
+22:55:18 | stage4.consolidate | INFO    | ======================================================================
+22:55:18 | stage4.consolidate | INFO    | Consolidating 2 documents (alphabetical order)
+22:55:18 | stage4.consolidate | INFO    |   attention_mechanisms_56e85c.txt
+22:55:18 | stage4.consolidate | INFO    |   retrieval_augmented_generation_510f8d.txt
+22:55:18 | stage4.consolidate | INFO    | Document offsets verified for all 2 documents
+22:55:18 | stage4.consolidate | INFO    |   validation: clean
+22:55:18 | stage4.consolidate | INFO    | Chunked into 2 chunks (median 755 tokens)
+22:55:18 | stage4.consolidate | INFO    | ----------------------------------------------------------------------
+22:55:18 | stage4.consolidate | INFO    |   documents  : 2  {'text': 2}
+22:55:18 | stage4.consolidate | INFO    |   tokens     : 1,513
+22:55:18 | stage4.consolidate | INFO    |   chunks     : 2 (median 755 tokens)
+22:55:35 | stage4.consolidate | INFO    | Embedding 2 chunks with all-MiniLM-L6-v2 ...
+22:55:35 | stage4.consolidate | INFO    | source_index built: 2 chunks in 0.2s

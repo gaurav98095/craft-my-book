@@ -1,0 +1,12 @@
+{
+  "processed": [
+    "attention_mechanisms.md",
+    "retrieval_augmented_generation.md"
+  ],
+  "failed": [
+    "fine_tuning_and_lora.pdf"
+  ],
+  "skipped": [],
+  "started_at": "2026-08-06T22:55:08",
+  "updated_at": "2026-08-06T22:55:18"
+}

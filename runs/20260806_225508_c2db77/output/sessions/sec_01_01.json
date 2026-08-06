@@ -1,0 +1,62 @@
+{
+  "section_id": "sec_01_01",
+  "title": "Query Vector",
+  "started_at": "2026-08-06T22:58:19",
+  "plan": {
+    "steps": [
+      {
+        "title": "Start with the information bottleneck and show why a token needs a way to look outward",
+        "topic": "Establishes that attention lets each output position inspect every input position directly instead of relying on a single recurrent hidden state.",
+        "uses_chunks": [
+          "chunk_0001"
+        ]
+      },
+      {
+        "title": "Define the query vector as the representation of what one token is looking for",
+        "topic": "Defines a query vector for each token and explains that it expresses the information that token needs from the surrounding sequence.",
+        "uses_chunks": [
+          "chunk_0001"
+        ]
+      },
+      {
+        "title": "Trace one query as it compares with the sequence without confusing searching with contributing",
+        "topic": "Shows that a token's query is compared against every other token's key, while the corresponding value is reserved for the information eventually contributed.",
+        "uses_chunks": [
+          "chunk_0001"
+        ]
+      },
+      {
+        "title": "Connect the query-key comparison to an attention score and preview the computation that follows",
+        "topic": "Introduces the query's role in the dot-product score, including scaling by the key dimension, while leaving score normalization and value aggregation to the next sections.",
+        "uses_chunks": [
+          "chunk_0001"
+        ]
+      }
+    ],
+    "teaches": [
+      "Why attention needs a per-token representation of what that token is looking for",
+      "What a query vector represents",
+      "How a query vector participates in comparisons with keys",
+      "Why the query vector is distinct from the value vector",
+      "How the query-key dot product becomes an attention score",
+      "Why the score is scaled by the square root of the key dimension"
+    ],
+    "assumes": [
+      "Token embeddings",
+      "Basic vector operations, including dot products",
+      "A sequence of tokens and token positions",
+      "The existence of key and value vectors, which are developed in adjacent sections",
+      "Softmax normalization and weighted value aggregation, which are developed in later chapters"
+    ],
+    "opening_promise": "After this section, you will be able to identify a query vector, explain what information it represents for a token, and trace how it initiates that token's search across the sequence."
+  },
+  "plan_version": 1,
+  "plan_rejections": [],
+  "drift_count": 0,
+  "steps_completed": 4,
+  "student_interactions": {
+    "doubts_resolved": [],
+    "doubts_deferred": []
+  },
+  "closed_at": "2026-08-06T22:59:38"
+}

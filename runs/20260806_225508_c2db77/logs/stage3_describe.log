@@ -1,0 +1,12 @@
+22:55:18 | stage3.describe | INFO    | ======================================================================
+22:55:18 | stage3.describe | INFO    | STAGE 3: DESCRIBING FIGURES IN CONTEXT
+22:55:18 | stage3.describe | INFO    | ======================================================================
+22:55:18 | stage3.describe | INFO    | Found 2 parsed documents
+22:55:18 | stage3.describe | INFO    |   attention_mechanisms.md: 3,414 chars | kept 0f/0t/0e | 0 decorative | 0 layout items dropped
+22:55:18 | stage3.describe | INFO    |   retrieval_augmented_generation.md: 3,516 chars | kept 0f/0t/0e | 0 decorative | 0 layout items dropped
+22:55:18 | stage3.describe | INFO    | ----------------------------------------------------------------------
+22:55:18 | stage3.describe | INFO    |   model       : gpt-5.6-luna
+22:55:18 | stage3.describe | INFO    |   converted   : 2 documents, 0 transcripts
+22:55:18 | stage3.describe | INFO    |   described   : 0 of 0 items
+22:55:18 | stage3.describe | INFO    |   model calls : 0
+22:55:18 | stage3.describe | INFO    |   elapsed     : 0.0 min

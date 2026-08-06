@@ -1,0 +1,27 @@
+{
+  "status": "success",
+  "file_path": "data/raw_sources/retrieval_augmented_generation.md",
+  "filename": "retrieval_augmented_generation.md",
+  "doc_slug": "retrieval_augmented_generation_510f8d",
+  "source_type": "text",
+  "parse_dir": "runs/20260806_225508_c2db77/data/parsed/retrieval_augmented_generation_510f8d",
+  "content_list": [
+    {
+      "type": "text",
+      "text": "# Lecture 7 -- Retrieval Augmented Generation\n\n## The problem RAG solves\n\nA language model's knowledge is frozen at training time and bounded by what\nfit in its context window. RAG (retrieval augmented generation) sidesteps\nboth limits: instead of asking the model to recall a fact from its weights,\nyou first retrieve the passages most likely to contain that fact from an\nexternal corpus, then hand those passages to the model as context and ask it\nto answer using them. The model still does the reasoning; it no longer has\nto do the remembering.\n\n## The three moving parts\n\n**Chunking.** A document is split into pieces small enough to retrieve\nindividually and cheap enough to embed, but large enough to still make sense\nout of context. Splitting mid-sentence or mid-table produces fragments that\nretrieve well by keyword overlap but read as nonsense once retrieved -- chunk\nboundaries should respect the document's own structure wherever the format\ngives you one (paragraphs, slide boundaries, table rows).\n\n**Embedding and the vector database.** Each chunk is converted into a dense\nvector by an embedding model, such that semantically similar chunks land\nnear each other in vector space. Those vectors are stored in a vector\ndatabase (Chroma, in this pipeline) that supports approximate nearest\nneighbour search: given a query vector, return the k chunks whose vectors\nare closest to it, without scanning every chunk in the corpus.\n\n**Reranking.** Nearest-neighbour retrieval over embeddings is fast but\napproximate -- it optimizes for semantic similarity, not necessarily for \"is\nthis the passage that answers the question.\" A reranker takes the top-k\ncandidates from the vector search and re-scores them with a more expensive,\nmore accurate model (often a cross-encoder that looks at the query and each\ncandidate together, rather than embedding them independently), then returns\na shorter, better-ordered list.\n\n## Why chunk size is a real design decision, not a detail\n\nToo small, and a chunk loses the context it needs to be self-contained -- a\nparagraph that says \"this approach also fails\" means nothing without the\nparagraph before it that named the approach. Too large, and the embedding\nfor the chunk becomes an average over several unrelated ideas, which hurts\nretrieval precision: a query about one specific idea in a five-idea chunk\nretrieves the whole chunk, diluted. A useful default is to target\n1,500-2,000 tokens per chunk, with no overlap between chunks -- overlap\nsounds like it should help, but it means the same sentence gets embedded\n(and can get retrieved) from two different chunks, double-counting it in any\ndownstream analysis that assumes chunks partition the corpus.\n\n## Provenance\n\nA retrieved chunk is only as trustworthy as its source. A production RAG\nsystem should carry, alongside every chunk, where it came from: which\ndocument, what type of source (a slide deck reads differently from a\ntranscript), and -- for anything derived from a recording -- a timestamp. That\nprovenance is what lets a downstream system say \"as the lecture demonstrated\non the whiteboard at 34 minutes in\" instead of presenting every fact with\nthe same flat authority regardless of where it came from.\n\n## Where this connects back\n\nThe chunking and embedding steps described here are exactly what Stage 4 and\nStage 5 of this pipeline's own ingestion process do to its own source\nmaterial -- this pipeline is, among other things, a RAG system whose corpus\nhappens to be the lecture material it was fed."
+    }
+  ],
+  "metadata": {
+    "total_items": 1,
+    "content_types": {
+      "text": 1
+    },
+    "images_resolved": 0,
+    "images_missing": 0,
+    "parse_time": 0.0,
+    "parse_method": "auto",
+    "parser_type": "llm",
+    "parsed_at": "2026-08-06T22:55:08",
+    "file_size": 3527
+  }
+}

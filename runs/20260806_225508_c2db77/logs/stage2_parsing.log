@@ -1,0 +1,20 @@
+22:55:08 | stage2.parse | INFO    | ======================================================================
+22:55:08 | stage2.parse | INFO    | STAGE 2: LAYOUT PARSING
+22:55:08 | stage2.parse | INFO    | ======================================================================
+22:55:08 | stage2.parse | INFO    | Found 3 documents, 0 other files
+22:55:08 | stage2.parse | INFO    | To parse: 3 | already parsed: 0
+22:55:08 | stage2.parse | INFO    |   attention_mechanisms.md: 1 items in 0.0s | {'text': 1}
+22:55:08 | stage2.parse | ERROR   |   fine_tuning_and_lora.pdf: ModuleNotFoundError: No module named 'fitz'
+22:55:08 | stage2.parse | INFO    |   retrieval_augmented_generation.md: 1 items in 0.0s | {'text': 1}
+22:55:08 | stage2.parse | WARNING |   fine_tuning_and_lora.pdf: attempt 1/3 failed (No module named 'fitz'); retrying in 5s
+22:55:13 | stage2.parse | ERROR   |   fine_tuning_and_lora.pdf: ModuleNotFoundError: No module named 'fitz'
+22:55:13 | stage2.parse | WARNING |   fine_tuning_and_lora.pdf: attempt 2/3 failed (No module named 'fitz'); retrying in 5s
+22:55:18 | stage2.parse | ERROR   |   fine_tuning_and_lora.pdf: ModuleNotFoundError: No module named 'fitz'
+22:55:18 | stage2.parse | ERROR   |   fine_tuning_and_lora.pdf: all 3 attempts failed
+22:55:18 | stage2.parse | INFO    | ----------------------------------------------------------------------
+22:55:18 | stage2.parse | INFO    |   total     : 3
+22:55:18 | stage2.parse | INFO    |   processed : 2
+22:55:18 | stage2.parse | INFO    |   skipped   : 0
+22:55:18 | stage2.parse | INFO    |   failed    : 1
+22:55:18 | stage2.parse | INFO    |   elapsed   : 0.17 min
+22:55:18 | stage2.parse | WARNING |   failures  : fine_tuning_and_lora.pdf

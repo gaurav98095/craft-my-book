@@ -1,0 +1,60 @@
+22:55:35 | pipelineB.toc | INFO    | Pipeline B configuration:
+22:55:35 | pipelineB.toc | INFO    |   model            : gpt-5.6-luna
+22:55:35 | pipelineB.toc | INFO    |   target pages     : 350
+22:55:35 | pipelineB.toc | INFO    |   → total words    : 122,500
+22:55:35 | pipelineB.toc | INFO    |   → target sections: 175  (design band: 120-250)
+22:55:35 | pipelineB.toc | INFO    |   quick test mode  : False
+22:55:35 | pipelineB.toc | INFO    | Loaded 2 chunks from runs/20260806_225508_c2db77/data/chunks
+22:55:35 | pipelineB.toc | INFO    |   corpus tokens : 1,476
+22:55:35 | pipelineB.toc | INFO    |   by source type: {'text': 2}
+22:55:35 | pipelineB.toc | INFO    |   with figures  : 0
+22:55:35 | pipelineB.toc | INFO    |   with timestamps: 0
+22:55:35 | pipelineB.toc | INFO    | ======================================================================
+22:55:35 | pipelineB.toc | INFO    | PIPELINE B: TABLE OF CONTENTS GENERATION
+22:55:35 | pipelineB.toc | INFO    | ======================================================================
+22:55:35 | pipelineB.toc | INFO    | >>> STEP 2: TAG AND RELATIONSHIP EXTRACTION
+22:55:35 | pipelineB.toc | INFO    |   2 chunks, one generation each - this is the slow step
+22:55:53 | pipelineB.toc | INFO    |   chunks processed : 2  (0 failed)
+22:55:53 | pipelineB.toc | INFO    |   raw tags         : 39  (19.5 per chunk)
+22:55:53 | pipelineB.toc | INFO    |   relationships    : 16
+22:55:53 | pipelineB.toc | INFO    | >>> STEP 3: TAG NORMALIZATION
+22:55:53 | pipelineB.toc | INFO    |   unique raw tags: 39
+22:56:01 | pipelineB.toc | INFO    |   canonical concepts: 39  (from 39 raw tags)
+22:56:01 | pipelineB.toc | INFO    |   relationships: 16 → 16 after merging
+22:56:01 | pipelineB.toc | INFO    |   wrote normalized_tags.json: 39 concepts, 1 aliases
+22:56:01 | pipelineB.toc | INFO    |   wrote tag_relationships.json: 3 concepts with prerequisites
+22:56:01 | pipelineB.toc | INFO    |   wrote chunk_tags.json: 2 chunks
+22:56:01 | pipelineB.toc | INFO    | >>> STEP 4: THEME DISCOVERY
+22:56:13 | pipelineB.toc | INFO    |   10 themes: ['Attention Representations and Information Flow', 'Scaled Dot-Product Attention', 'Multi-Head Attention Architecture', 'Positional Representation', 'Efficient Autoregressive Inference', 'Retrieval-Augmented Generation Motivation', 'Document Preparation and Chunking', 'Embeddings and Vector Indexing', 'Candidate Retrieval and Reranking', 'Retrieval Provenance and Source Metadata']
+22:56:13 | pipelineB.toc | INFO    | >>> STEP 5: TAG ASSIGNMENT
+22:56:19 | pipelineB.toc | INFO    |   theme-1: 3 concepts
+22:56:19 | pipelineB.toc | INFO    |   theme-2: 4 concepts
+22:56:19 | pipelineB.toc | INFO    |   theme-3: 5 concepts
+22:56:19 | pipelineB.toc | INFO    |   theme-4: 4 concepts
+22:56:19 | pipelineB.toc | INFO    |   theme-5: 2 concepts
+22:56:19 | pipelineB.toc | INFO    |   theme-6: 5 concepts
+22:56:19 | pipelineB.toc | INFO    |   theme-7: 4 concepts
+22:56:19 | pipelineB.toc | INFO    |   theme-8: 4 concepts
+22:56:19 | pipelineB.toc | INFO    |   theme-9: 5 concepts
+22:56:19 | pipelineB.toc | INFO    |   theme-10: 3 concepts
+22:56:19 | pipelineB.toc | INFO    | >>> STEP 6: SECTION FORMATION
+22:56:19 | pipelineB.toc | INFO    |   section budget 175 allocated as: {'Attention Representation': 13, 'Scaled Dot-Product Atten': 18, 'Multi-Head Attention Arc': 24, 'Positional Representatio': 18, 'Efficient Autoregressive': 9, 'Retrieval-Augmented Gene': 22, 'Document Preparation and': 18, 'Embeddings and Vector In': 18, 'Candidate Retrieval and ': 22, 'Retrieval Provenance and': 13}
+22:56:24 | pipelineB.toc | WARNING |   'Attention Representations and Information Flow': asked for 13 sections, got 3
+22:56:34 | pipelineB.toc | WARNING |   'Scaled Dot-Product Attention': asked for 18 sections, got 4
+22:56:44 | pipelineB.toc | WARNING |   'Multi-Head Attention Architecture': asked for 24 sections, got 5
+22:56:55 | pipelineB.toc | WARNING |   'Positional Representation': asked for 18 sections, got 4
+22:57:05 | pipelineB.toc | WARNING |   'Efficient Autoregressive Inference': asked for 9 sections, got 2
+22:57:16 | pipelineB.toc | WARNING |   'Retrieval-Augmented Generation Motivation': asked for 22 sections, got 5
+22:57:25 | pipelineB.toc | WARNING |   'Document Preparation and Chunking': asked for 18 sections, got 4
+22:57:31 | pipelineB.toc | WARNING |   'Embeddings and Vector Indexing': asked for 18 sections, got 4
+22:57:42 | pipelineB.toc | WARNING |   'Candidate Retrieval and Reranking': asked for 22 sections, got 5
+22:57:50 | pipelineB.toc | WARNING |   'Retrieval Provenance and Source Metadata': asked for 13 sections, got 3
+22:57:50 | pipelineB.toc | INFO    | >>> STEP 7: CURRICULUM ORDERING
+22:58:18 | pipelineB.toc | INFO    | >>> STEP 8: BUILD toc.json
+22:58:18 | pipelineB.toc | WARNING |   word budget: 39 sections x ~3141 words wanted 122,500, but clamping to 600-900 allocated 35,100 (100 pages vs 350 requested)
+22:58:19 | pipelineB.toc | INFO    | >>> VALIDATION
+22:58:19 | pipelineB.toc | INFO    | ----------------------------------------------------------------------
+22:58:19 | pipelineB.toc | INFO    |   chapters : 10
+22:58:19 | pipelineB.toc | INFO    |   sections : 39 (target 175)
+22:58:19 | pipelineB.toc | INFO    |   words    : 35,100 ≈ 100 pages
+22:58:19 | pipelineB.toc | INFO    |   elapsed  : 2.7 min

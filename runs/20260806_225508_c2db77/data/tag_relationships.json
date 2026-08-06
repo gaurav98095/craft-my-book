@@ -1,0 +1,13 @@
+{
+  "scaled dot-product attention": [
+    "query vector",
+    "key vector",
+    "value vector"
+  ],
+  "weighted value aggregation": [
+    "softmax attention weights"
+  ],
+  "reranking": [
+    "top-k candidate retrieval"
+  ]
+}

@@ -1,0 +1,149 @@
+{
+  "chunk_tags": {
+    "chunk_0001": [
+      "hidden-state bottleneck",
+      "query vector",
+      "key vector",
+      "value vector",
+      "scaled dot-product attention",
+      "key-dimension scaling",
+      "softmax attention weights",
+      "weighted value aggregation",
+      "attention head",
+      "multi-head attention",
+      "learned q/k/v projections",
+      "head concatenation",
+      "attention output projection",
+      "permutation invariance",
+      "sinusoidal positional encoding",
+      "learned positional embedding",
+      "rotary position embedding (rope)",
+      "kv cache",
+      "linear kv-cache memory growth"
+    ],
+    "chunk_0002": [
+      "retrieval-augmented generation",
+      "frozen training-time knowledge",
+      "context-window limitation",
+      "external corpus retrieval",
+      "document chunking",
+      "structure-aware chunk boundaries",
+      "1,500–2,000-token chunk target",
+      "zero chunk overlap",
+      "embedding model",
+      "dense vector embedding",
+      "vector database",
+      "approximate nearest-neighbor search",
+      "top-k candidate retrieval",
+      "semantic similarity retrieval",
+      "reranking",
+      "cross-encoder reranker",
+      "answer-relevance scoring",
+      "provenance metadata",
+      "source-type metadata",
+      "recording timestamp metadata"
+    ]
+  },
+  "relationships": [
+    {
+      "from": "scaled dot-product attention",
+      "to": "query vector",
+      "type": "requires",
+      "chunk_id": "chunk_0001"
+    },
+    {
+      "from": "scaled dot-product attention",
+      "to": "key vector",
+      "type": "requires",
+      "chunk_id": "chunk_0001"
+    },
+    {
+      "from": "scaled dot-product attention",
+      "to": "value vector",
+      "type": "requires",
+      "chunk_id": "chunk_0001"
+    },
+    {
+      "from": "key-dimension scaling",
+      "to": "scaled dot-product attention",
+      "type": "part_of",
+      "chunk_id": "chunk_0001"
+    },
+    {
+      "from": "softmax attention weights",
+      "to": "scaled dot-product attention",
+      "type": "part_of",
+      "chunk_id": "chunk_0001"
+    },
+    {
+      "from": "weighted value aggregation",
+      "to": "softmax attention weights",
+      "type": "requires",
+      "chunk_id": "chunk_0001"
+    },
+    {
+      "from": "attention head",
+      "to": "multi-head attention",
+      "type": "part_of",
+      "chunk_id": "chunk_0001"
+    },
+    {
+      "from": "sinusoidal positional encoding",
+      "to": "learned positional embedding",
+      "type": "contrasts_with",
+      "chunk_id": "chunk_0001"
+    },
+    {
+      "from": "external corpus retrieval",
+      "to": "retrieval-augmented generation",
+      "type": "part_of",
+      "chunk_id": "chunk_0002"
+    },
+    {
+      "from": "document chunking",
+      "to": "retrieval-augmented generation",
+      "type": "part_of",
+      "chunk_id": "chunk_0002"
+    },
+    {
+      "from": "structure-aware chunk boundaries",
+      "to": "document chunking",
+      "type": "part_of",
+      "chunk_id": "chunk_0002"
+    },
+    {
+      "from": "1,500–2,000-token chunk target",
+      "to": "document chunking",
+      "type": "part_of",
+      "chunk_id": "chunk_0002"
+    },
+    {
+      "from": "zero chunk overlap",
+      "to": "document chunking",
+      "type": "part_of",
+      "chunk_id": "chunk_0002"
+    },
+    {
+      "from": "dense vector embedding",
+      "to": "embedding model",
+      "type": "part_of",
+      "chunk_id": "chunk_0002"
+    },
+    {
+      "from": "approximate nearest-neighbor search",
+      "to": "vector database",
+      "type": "part_of",
+      "chunk_id": "chunk_0002"
+    },
+    {
+      "from": "reranking",
+      "to": "top-k candidate retrieval",
+      "type": "requires",
+      "chunk_id": "chunk_0002"
+    }
+  ],
+  "summaries": {
+    "chunk_0001": "This chunk explains how scaled dot-product and multi-head attention use query, key, and value vectors, how positional encodings restore token order, and how KV caching accelerates autoregressive generation.",
+    "chunk_0002": "This chunk explains how RAG retrieves and embeds structured document chunks, reranks approximate nearest-neighbor results, balances chunk size and overlap, and preserves provenance metadata."
+  }
+}

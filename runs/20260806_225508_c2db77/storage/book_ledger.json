@@ -1,0 +1,875 @@
+{
+  "version": 1,
+  "last_section": "sec_01_01",
+  "concepts": {
+    "hidden_state_bottleneck": {
+      "canonical_name": "hidden-state bottleneck",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "hidden-state bottleneck"
+      ],
+      "prerequisites": []
+    },
+    "query_vector": {
+      "canonical_name": "query vector",
+      "aliases": [],
+      "definition": "For each token position, attention constructs a query vector: a numeric representation of what that position needs to find in the surrounding sequence.",
+      "defined_in": "sec_01_01",
+      "depth": "explained",
+      "referenced_in": [],
+      "source_tags": [
+        "query vector"
+      ],
+      "prerequisites": []
+    },
+    "key_vector": {
+      "canonical_name": "key vector",
+      "aliases": [],
+      "definition": "Each position also produces a key vector.",
+      "defined_in": "sec_01_01",
+      "depth": "explained",
+      "referenced_in": [],
+      "source_tags": [
+        "key vector"
+      ],
+      "prerequisites": []
+    },
+    "value_vector": {
+      "canonical_name": "value vector",
+      "aliases": [],
+      "definition": "Each position produces a value vector through another learned projection.",
+      "defined_in": "sec_01_01",
+      "depth": "explained",
+      "referenced_in": [],
+      "source_tags": [
+        "value vector"
+      ],
+      "prerequisites": []
+    },
+    "scaled_dot_product_attention": {
+      "canonical_name": "scaled dot-product attention",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "scaled dot-product attention"
+      ],
+      "prerequisites": [
+        "query vector",
+        "key vector",
+        "value vector"
+      ]
+    },
+    "key_dimension_scaling": {
+      "canonical_name": "key-dimension scaling",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "key-dimension scaling"
+      ],
+      "prerequisites": []
+    },
+    "softmax_attention_weights": {
+      "canonical_name": "softmax attention weights",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "softmax attention weights"
+      ],
+      "prerequisites": []
+    },
+    "weighted_value_aggregation": {
+      "canonical_name": "weighted value aggregation",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "weighted value aggregation"
+      ],
+      "prerequisites": [
+        "softmax attention weights"
+      ]
+    },
+    "attention_head": {
+      "canonical_name": "attention head",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "attention head"
+      ],
+      "prerequisites": []
+    },
+    "multi_head_attention": {
+      "canonical_name": "multi-head attention",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "multi-head attention"
+      ],
+      "prerequisites": []
+    },
+    "learned_q_k_v_projections": {
+      "canonical_name": "learned q/k/v projections",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "learned q/k/v projections"
+      ],
+      "prerequisites": []
+    },
+    "head_concatenation": {
+      "canonical_name": "head concatenation",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "head concatenation"
+      ],
+      "prerequisites": []
+    },
+    "attention_output_projection": {
+      "canonical_name": "attention output projection",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "attention output projection"
+      ],
+      "prerequisites": []
+    },
+    "permutation_invariance": {
+      "canonical_name": "permutation invariance",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "permutation invariance"
+      ],
+      "prerequisites": []
+    },
+    "sinusoidal_positional_encoding": {
+      "canonical_name": "sinusoidal positional encoding",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "sinusoidal positional encoding"
+      ],
+      "prerequisites": []
+    },
+    "learned_positional_embedding": {
+      "canonical_name": "learned positional embedding",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "learned positional embedding"
+      ],
+      "prerequisites": []
+    },
+    "rotary_position_embedding": {
+      "canonical_name": "rotary position embedding",
+      "aliases": [
+        "rotary position embedding (rope)"
+      ],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "rotary position embedding"
+      ],
+      "prerequisites": []
+    },
+    "kv_cache": {
+      "canonical_name": "kv cache",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "kv cache"
+      ],
+      "prerequisites": []
+    },
+    "linear_kv_cache_memory_growth": {
+      "canonical_name": "linear kv-cache memory growth",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "linear kv-cache memory growth"
+      ],
+      "prerequisites": []
+    },
+    "retrieval_augmented_generation": {
+      "canonical_name": "retrieval-augmented generation",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "retrieval-augmented generation"
+      ],
+      "prerequisites": []
+    },
+    "frozen_training_time_knowledge": {
+      "canonical_name": "frozen training-time knowledge",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "frozen training-time knowledge"
+      ],
+      "prerequisites": []
+    },
+    "context_window_limitation": {
+      "canonical_name": "context-window limitation",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "context-window limitation"
+      ],
+      "prerequisites": []
+    },
+    "external_corpus_retrieval": {
+      "canonical_name": "external corpus retrieval",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "external corpus retrieval"
+      ],
+      "prerequisites": []
+    },
+    "document_chunking": {
+      "canonical_name": "document chunking",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "document chunking"
+      ],
+      "prerequisites": []
+    },
+    "structure_aware_chunk_boundaries": {
+      "canonical_name": "structure-aware chunk boundaries",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "structure-aware chunk boundaries"
+      ],
+      "prerequisites": []
+    },
+    "1_500_2_000_token_chunk_target": {
+      "canonical_name": "1,500–2,000-token chunk target",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "1,500–2,000-token chunk target"
+      ],
+      "prerequisites": []
+    },
+    "zero_chunk_overlap": {
+      "canonical_name": "zero chunk overlap",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "zero chunk overlap"
+      ],
+      "prerequisites": []
+    },
+    "embedding_model": {
+      "canonical_name": "embedding model",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "embedding model"
+      ],
+      "prerequisites": []
+    },
+    "dense_vector_embedding": {
+      "canonical_name": "dense vector embedding",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "dense vector embedding"
+      ],
+      "prerequisites": []
+    },
+    "vector_database": {
+      "canonical_name": "vector database",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "vector database"
+      ],
+      "prerequisites": []
+    },
+    "approximate_nearest_neighbor_search": {
+      "canonical_name": "approximate nearest-neighbor search",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "approximate nearest-neighbor search"
+      ],
+      "prerequisites": []
+    },
+    "top_k_candidate_retrieval": {
+      "canonical_name": "top-k candidate retrieval",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "top-k candidate retrieval"
+      ],
+      "prerequisites": []
+    },
+    "semantic_similarity_retrieval": {
+      "canonical_name": "semantic similarity retrieval",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "semantic similarity retrieval"
+      ],
+      "prerequisites": []
+    },
+    "reranking": {
+      "canonical_name": "reranking",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "reranking"
+      ],
+      "prerequisites": [
+        "top-k candidate retrieval"
+      ]
+    },
+    "cross_encoder_reranker": {
+      "canonical_name": "cross-encoder reranker",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "cross-encoder reranker"
+      ],
+      "prerequisites": []
+    },
+    "answer_relevance_scoring": {
+      "canonical_name": "answer-relevance scoring",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "answer-relevance scoring"
+      ],
+      "prerequisites": []
+    },
+    "provenance_metadata": {
+      "canonical_name": "provenance metadata",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "provenance metadata"
+      ],
+      "prerequisites": []
+    },
+    "source_type_metadata": {
+      "canonical_name": "source-type metadata",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "source-type metadata"
+      ],
+      "prerequisites": []
+    },
+    "recording_timestamp_metadata": {
+      "canonical_name": "recording timestamp metadata",
+      "aliases": [],
+      "definition": null,
+      "defined_in": null,
+      "depth": "unwritten",
+      "referenced_in": [],
+      "source_tags": [
+        "recording timestamp metadata"
+      ],
+      "prerequisites": []
+    },
+    "information_bottleneck": {
+      "canonical_name": "information bottleneck",
+      "aliases": [],
+      "definition": "This creates an information bottleneck: the hidden state has finite capacity, while the sequence may contain many distinct facts, references, and relationships.",
+      "defined_in": "sec_01_01",
+      "depth": "explained",
+      "referenced_in": [],
+      "source_tags": [],
+      "prerequisites": []
+    },
+    "query": {
+      "canonical_name": "query",
+      "aliases": [],
+      "definition": "It encodes search criteria in a learned vector space.",
+      "defined_in": "sec_01_01",
+      "depth": "explained",
+      "referenced_in": [],
+      "source_tags": [],
+      "prerequisites": []
+    },
+    "key": {
+      "canonical_name": "key",
+      "aliases": [],
+      "definition": "Whereas the query represents what the current position is looking for, the key represents what a position makes available for matching.",
+      "defined_in": "sec_01_01",
+      "depth": "explained",
+      "referenced_in": [],
+      "source_tags": [],
+      "prerequisites": []
+    },
+    "value": {
+      "canonical_name": "value",
+      "aliases": [],
+      "definition": "The value is the content that position contributes if attention selects it.",
+      "defined_in": "sec_01_01",
+      "depth": "explained",
+      "referenced_in": [],
+      "source_tags": [],
+      "prerequisites": []
+    },
+    "attention_score": {
+      "canonical_name": "attention score",
+      "aliases": [],
+      "definition": "The query–key comparison becomes an attention score through a dot product.",
+      "defined_in": "sec_01_01",
+      "depth": "explained",
+      "referenced_in": [],
+      "source_tags": [],
+      "prerequisites": []
+    },
+    "scaled_attention_score": {
+      "canonical_name": "scaled attention score",
+      "aliases": [],
+      "definition": "The dot product must be scaled before it is used.",
+      "defined_in": "sec_01_01",
+      "depth": "explained",
+      "referenced_in": [],
+      "source_tags": [],
+      "prerequisites": []
+    }
+  },
+  "claims": [
+    {
+      "claim_id": "sec_01_01_claim_01",
+      "text": "A recurrent network processes a sequence one token at a time and updates a single hidden state after reading each token.",
+      "confidence": "strong",
+      "section_id": "sec_01_01",
+      "tags": [
+        "Attention provides direct access to the input sequence rather than requiring all relevant information to survive in one running hidden state.",
+        "A query vector represents what a token position needs to find.",
+        "A key vector represents what a position makes available for matching.",
+        "A value vector carries the content a position contributes when selected.",
+        "Queries, keys, and values are produced by separate learned linear projections.",
+        "Attention compares each query with every available key using a dot product.",
+        "Dot-product attention scores are scaled by the square root of the key dimension.",
+        "Scaled scores express relative compatibility but are not yet attention weights or combined values."
+      ]
+    },
+    {
+      "claim_id": "sec_01_01_claim_02",
+      "text": "The hidden state must carry everything relevant from the prefix it has seen, although it has finite capacity.",
+      "confidence": "strong",
+      "section_id": "sec_01_01",
+      "tags": [
+        "Attention provides direct access to the input sequence rather than requiring all relevant information to survive in one running hidden state.",
+        "A query vector represents what a token position needs to find.",
+        "A key vector represents what a position makes available for matching.",
+        "A value vector carries the content a position contributes when selected.",
+        "Queries, keys, and values are produced by separate learned linear projections.",
+        "Attention compares each query with every available key using a dot product.",
+        "Dot-product attention scores are scaled by the square root of the key dimension.",
+        "Scaled scores express relative compatibility but are not yet attention weights or combined values."
+      ]
+    },
+    {
+      "claim_id": "sec_01_01_claim_03",
+      "text": "In a recurrent network, information from the beginning of a long sequence may be weakened or overwritten by the time the final token is reached.",
+      "confidence": "strong",
+      "section_id": "sec_01_01",
+      "tags": [
+        "Attention provides direct access to the input sequence rather than requiring all relevant information to survive in one running hidden state.",
+        "A query vector represents what a token position needs to find.",
+        "A key vector represents what a position makes available for matching.",
+        "A value vector carries the content a position contributes when selected.",
+        "Queries, keys, and values are produced by separate learned linear projections.",
+        "Attention compares each query with every available key using a dot product.",
+        "Dot-product attention scores are scaled by the square root of the key dimension.",
+        "Scaled scores express relative compatibility but are not yet attention weights or combined values."
+      ]
+    },
+    {
+      "claim_id": "sec_01_01_claim_04",
+      "text": "Attention allows each output position to inspect the input sequence directly, including nearby and distant positions in the same computation.",
+      "confidence": "strong",
+      "section_id": "sec_01_01",
+      "tags": [
+        "Attention provides direct access to the input sequence rather than requiring all relevant information to survive in one running hidden state.",
+        "A query vector represents what a token position needs to find.",
+        "A key vector represents what a position makes available for matching.",
+        "A value vector carries the content a position contributes when selected.",
+        "Queries, keys, and values are produced by separate learned linear projections.",
+        "Attention compares each query with every available key using a dot product.",
+        "Dot-product attention scores are scaled by the square root of the key dimension.",
+        "Scaled scores express relative compatibility but are not yet attention weights or combined values."
+      ]
+    },
+    {
+      "claim_id": "sec_01_01_claim_05",
+      "text": "The representation produced for a position can be based on a selective view of the sequence rather than solely on what survived in a running summary.",
+      "confidence": "strong",
+      "section_id": "sec_01_01",
+      "tags": [
+        "Attention provides direct access to the input sequence rather than requiring all relevant information to survive in one running hidden state.",
+        "A query vector represents what a token position needs to find.",
+        "A key vector represents what a position makes available for matching.",
+        "A value vector carries the content a position contributes when selected.",
+        "Queries, keys, and values are produced by separate learned linear projections.",
+        "Attention compares each query with every available key using a dot product.",
+        "Dot-product attention scores are scaled by the square root of the key dimension.",
+        "Scaled scores express relative compatibility but are not yet attention weights or combined values."
+      ]
+    },
+    {
+      "claim_id": "sec_01_01_claim_06",
+      "text": "Every position can ask for a different kind of information even though the same sequence supplies the inputs.",
+      "confidence": "strong",
+      "section_id": "sec_01_01",
+      "tags": [
+        "Attention provides direct access to the input sequence rather than requiring all relevant information to survive in one running hidden state.",
+        "A query vector represents what a token position needs to find.",
+        "A key vector represents what a position makes available for matching.",
+        "A value vector carries the content a position contributes when selected.",
+        "Queries, keys, and values are produced by separate learned linear projections.",
+        "Attention compares each query with every available key using a dot product.",
+        "Dot-product attention scores are scaled by the square root of the key dimension.",
+        "Scaled scores express relative compatibility but are not yet attention weights or combined values."
+      ]
+    },
+    {
+      "claim_id": "sec_01_01_claim_07",
+      "text": "Queries are produced by applying a learned linear projection to each token representation: Q_i = X_i W_Q.",
+      "confidence": "strong",
+      "section_id": "sec_01_01",
+      "tags": [
+        "Attention provides direct access to the input sequence rather than requiring all relevant information to survive in one running hidden state.",
+        "A query vector represents what a token position needs to find.",
+        "A key vector represents what a position makes available for matching.",
+        "A value vector carries the content a position contributes when selected.",
+        "Queries, keys, and values are produced by separate learned linear projections.",
+        "Attention compares each query with every available key using a dot product.",
+        "Dot-product attention scores are scaled by the square root of the key dimension.",
+        "Scaled scores express relative compatibility but are not yet attention weights or combined values."
+      ]
+    },
+    {
+      "claim_id": "sec_01_01_claim_08",
+      "text": "Training adjusts the parameters so that queries associated with a position become compatible with representations at positions that can help interpret it.",
+      "confidence": "strong",
+      "section_id": "sec_01_01",
+      "tags": [
+        "Attention provides direct access to the input sequence rather than requiring all relevant information to survive in one running hidden state.",
+        "A query vector represents what a token position needs to find.",
+        "A key vector represents what a position makes available for matching.",
+        "A value vector carries the content a position contributes when selected.",
+        "Queries, keys, and values are produced by separate learned linear projections.",
+        "Attention compares each query with every available key using a dot product.",
+        "Dot-product attention scores are scaled by the square root of the key dimension.",
+        "Scaled scores express relative compatibility but are not yet attention weights or combined values."
+      ]
+    },
+    {
+      "claim_id": "sec_01_01_claim_09",
+      "text": "Keys are produced by applying another learned projection to the same input representation: K_j = X_j W_K.",
+      "confidence": "strong",
+      "section_id": "sec_01_01",
+      "tags": [
+        "Attention provides direct access to the input sequence rather than requiring all relevant information to survive in one running hidden state.",
+        "A query vector represents what a token position needs to find.",
+        "A key vector represents what a position makes available for matching.",
+        "A value vector carries the content a position contributes when selected.",
+        "Queries, keys, and values are produced by separate learned linear projections.",
+        "Attention compares each query with every available key using a dot product.",
+        "Dot-product attention scores are scaled by the square root of the key dimension.",
+        "Scaled scores express relative compatibility but are not yet attention weights or combined values."
+      ]
+    },
+    {
+      "claim_id": "sec_01_01_claim_10",
+      "text": "For a query at position i, attention compares it with the key at every position j, including the position itself unless a causal restriction is applied.",
+      "confidence": "strong",
+      "section_id": "sec_01_01",
+      "tags": [
+        "Attention provides direct access to the input sequence rather than requiring all relevant information to survive in one running hidden state.",
+        "A query vector represents what a token position needs to find.",
+        "A key vector represents what a position makes available for matching.",
+        "A value vector carries the content a position contributes when selected.",
+        "Queries, keys, and values are produced by separate learned linear projections.",
+        "Attention compares each query with every available key using a dot product.",
+        "Dot-product attention scores are scaled by the square root of the key dimension.",
+        "Scaled scores express relative compatibility but are not yet attention weights or combined values."
+      ]
+    },
+    {
+      "claim_id": "sec_01_01_claim_11",
+      "text": "Values are produced through another learned projection: V_j = X_j W_V.",
+      "confidence": "strong",
+      "section_id": "sec_01_01",
+      "tags": [
+        "Attention provides direct access to the input sequence rather than requiring all relevant information to survive in one running hidden state.",
+        "A query vector represents what a token position needs to find.",
+        "A key vector represents what a position makes available for matching.",
+        "A value vector carries the content a position contributes when selected.",
+        "Queries, keys, and values are produced by separate learned linear projections.",
+        "Attention compares each query with every available key using a dot product.",
+        "Dot-product attention scores are scaled by the square root of the key dimension.",
+        "Scaled scores express relative compatibility but are not yet attention weights or combined values."
+      ]
+    },
+    {
+      "claim_id": "sec_01_01_claim_12",
+      "text": "A key helps determine whether a position should be consulted, while its corresponding value supplies what is read from that position.",
+      "confidence": "strong",
+      "section_id": "sec_01_01",
+      "tags": [
+        "Attention provides direct access to the input sequence rather than requiring all relevant information to survive in one running hidden state.",
+        "A query vector represents what a token position needs to find.",
+        "A key vector represents what a position makes available for matching.",
+        "A value vector carries the content a position contributes when selected.",
+        "Queries, keys, and values are produced by separate learned linear projections.",
+        "Attention compares each query with every available key using a dot product.",
+        "Dot-product attention scores are scaled by the square root of the key dimension.",
+        "Scaled scores express relative compatibility but are not yet attention weights or combined values."
+      ]
+    },
+    {
+      "claim_id": "sec_01_01_claim_13",
+      "text": "The unnormalized query–key score is the dot product s_ij = Q_i · K_j.",
+      "confidence": "strong",
+      "section_id": "sec_01_01",
+      "tags": [
+        "Attention provides direct access to the input sequence rather than requiring all relevant information to survive in one running hidden state.",
+        "A query vector represents what a token position needs to find.",
+        "A key vector represents what a position makes available for matching.",
+        "A value vector carries the content a position contributes when selected.",
+        "Queries, keys, and values are produced by separate learned linear projections.",
+        "Attention compares each query with every available key using a dot product.",
+        "Dot-product attention scores are scaled by the square root of the key dimension.",
+        "Scaled scores express relative compatibility but are not yet attention weights or combined values."
+      ]
+    },
+    {
+      "claim_id": "sec_01_01_claim_14",
+      "text": "A large dot product indicates stronger alignment between the features sought by a query and those offered by a key, while a small or negative dot product indicates a weaker match.",
+      "confidence": "strong",
+      "section_id": "sec_01_01",
+      "tags": [
+        "Attention provides direct access to the input sequence rather than requiring all relevant information to survive in one running hidden state.",
+        "A query vector represents what a token position needs to find.",
+        "A key vector represents what a position makes available for matching.",
+        "A value vector carries the content a position contributes when selected.",
+        "Queries, keys, and values are produced by separate learned linear projections.",
+        "Attention compares each query with every available key using a dot product.",
+        "Dot-product attention scores are scaled by the square root of the key dimension.",
+        "Scaled scores express relative compatibility but are not yet attention weights or combined values."
+      ]
+    },
+    {
+      "claim_id": "sec_01_01_claim_15",
+      "text": "The attention score is scaled as score(i,j) = (Q_i · K_j) / sqrt(d_k), where d_k is the dimensionality of each key vector.",
+      "confidence": "strong",
+      "section_id": "sec_01_01",
+      "tags": [
+        "Attention provides direct access to the input sequence rather than requiring all relevant information to survive in one running hidden state.",
+        "A query vector represents what a token position needs to find.",
+        "A key vector represents what a position makes available for matching.",
+        "A value vector carries the content a position contributes when selected.",
+        "Queries, keys, and values are produced by separate learned linear projections.",
+        "Attention compares each query with every available key using a dot product.",
+        "Dot-product attention scores are scaled by the square root of the key dimension.",
+        "Scaled scores express relative compatibility but are not yet attention weights or combined values."
+      ]
+    },
+    {
+      "claim_id": "sec_01_01_claim_16",
+      "text": "As the key dimension grows, unscaled dot products tend to have larger magnitude, which can make the subsequent distribution overly concentrated and give training less useful gradient information.",
+      "confidence": "strong",
+      "section_id": "sec_01_01",
+      "tags": [
+        "Attention provides direct access to the input sequence rather than requiring all relevant information to survive in one running hidden state.",
+        "A query vector represents what a token position needs to find.",
+        "A key vector represents what a position makes available for matching.",
+        "A value vector carries the content a position contributes when selected.",
+        "Queries, keys, and values are produced by separate learned linear projections.",
+        "Attention compares each query with every available key using a dot product.",
+        "Dot-product attention scores are scaled by the square root of the key dimension.",
+        "Scaled scores express relative compatibility but are not yet attention weights or combined values."
+      ]
+    },
+    {
+      "claim_id": "sec_01_01_claim_17",
+      "text": "Attention scores express relative compatibility and have not yet been converted into weights or used to add value vectors to the output representation.",
+      "confidence": "strong",
+      "section_id": "sec_01_01",
+      "tags": [
+        "Attention provides direct access to the input sequence rather than requiring all relevant information to survive in one running hidden state.",
+        "A query vector represents what a token position needs to find.",
+        "A key vector represents what a position makes available for matching.",
+        "A value vector carries the content a position contributes when selected.",
+        "Queries, keys, and values are produced by separate learned linear projections.",
+        "Attention compares each query with every available key using a dot product.",
+        "Dot-product attention scores are scaled by the square root of the key dimension.",
+        "Scaled scores express relative compatibility but are not yet attention weights or combined values."
+      ]
+    }
+  ],
+  "promises": [
+    {
+      "promise_id": "sec_01_01_promise_01",
+      "text": "The next operation normalizes the scores across the candidate positions and produces weights that determine how strongly each corresponding value contributes to the output representation.",
+      "target_hint": "sec_01_02",
+      "made_in": "sec_01_01",
+      "status": "open"
+    }
+  ],
+  "examples": {
+    "SupportBot": {
+      "introduced_in": "sec_01_01",
+      "files_shown": [],
+      "current_state": "For the phrase “that charge,” the position's query represents a need related to resolving which earlier transaction is referenced. It is compared with keys from earlier words and the rest of the message; a transaction description may receive a high score and unrelated details lower scores. The scores remain unnormalized compatibility values, and no value has yet been combined into the representation.",
+      "last_touched": "sec_01_01"
+    }
+  },
+  "coverage": {
+    "chunk_0001": {
+      "used_by": [
+        "sec_01_01"
+      ],
+      "depth": "primary"
+    }
+  },
+  "section_summaries": {
+    "sec_01_01": {
+      "abstract": "This section taught how attention separates information seeking, matching, and retrieval into query, key, and value vectors. It explained that queries represent what a position needs, keys represent what positions offer for matching, and values carry the content contributed after selection. It showed how learned projections produce these vectors, how query–key dot products create compatibility scores, and why scores are scaled by the square root of the key dimension. It ended before score normalization and value aggregation.",
+      "teaches": [
+        "Attention provides direct access to the input sequence rather than requiring all relevant information to survive in one running hidden state.",
+        "A query vector represents what a token position needs to find.",
+        "A key vector represents what a position makes available for matching.",
+        "A value vector carries the content a position contributes when selected.",
+        "Queries, keys, and values are produced by separate learned linear projections.",
+        "Attention compares each query with every available key using a dot product.",
+        "Dot-product attention scores are scaled by the square root of the key dimension.",
+        "Scaled scores express relative compatibility but are not yet attention weights or combined values."
+      ],
+      "assumes": [
+        "token",
+        "sequence",
+        "hidden state",
+        "position",
+        "representation",
+        "learned parameter",
+        "training",
+        "linear projection",
+        "dimensionality",
+        "gradient"
+      ],
+      "closing_line": "The resulting weights determine how strongly each corresponding value contributes to the output representation.",
+      "title": "Query Vector",
+      "word_count": 1039
+    }
+  },
+  "chapter_rollups": {},
+  "figures_used": {}
+}
